@@ -145,78 +145,110 @@ class TitleController extends Controller
         $isSeries = ($title->type instanceof \App\Enums\TitleType ? $title->type === \App\Enums\TitleType::TV_SERIES : $title->type === 'tv_series');
         $typeWord = $isSeries ? 'web series' : 'movie';
 
-        // 1. Where to watch
+        // A1. Release Date ("when did {movie_name} come out", "{movie_name} release date")
+        if ($title->release_date) {
+            $dateStr = $title->release_date->format('F d, Y');
+            $yearStr = $title->release_date->format('Y');
+            $faqs[] = [
+                'question' => "When did {$title->title} come out and what is its release date?",
+                'answer' => "{$title->title} officially released on {$dateStr} ({$yearStr}). Discover full theatrical release timeline, festival screenings, and streaming dates on TonightOnScreen.",
+            ];
+        }
+
+        // A2. Runtime ("{movie_name} runtime", "{movie_name} run time")
+        if ($title->runtime_minutes) {
+            $hours = intdiv($title->runtime_minutes, 60);
+            $minutes = $title->runtime_minutes % 60;
+            $durationFormatted = $hours > 0 ? "{$hours}h {$minutes}m" : "{$minutes}m";
+            $faqs[] = [
+                'question' => "What is the runtime of {$title->title}?",
+                'answer' => "The total runtime of {$title->title} is {$title->runtime_minutes} minutes ({$durationFormatted}).",
+            ];
+        }
+
+        // A3. Genre ("{movie_name} genre")
+        if ($title->relationLoaded('genres') && $title->genres->isNotEmpty()) {
+            $genreList = $title->genres->pluck('name')->join(', ', ' and ');
+            $faqs[] = [
+                'question' => "What genre is {$title->title}?",
+                'answer' => "{$title->title} is categorized under {$genreList}. Explore curated recommendations and top-rated titles in these genres on TonightOnScreen.",
+            ];
+        }
+
+        // B1. Cast & Actors ("{movie_name} cast", "cast of {movie_name}", "who stars in {movie_name}", "actors in {movie_name}")
+        if ($cast->isNotEmpty()) {
+            $castWithChars = $cast->take(5)->map(function($c) {
+                $name = $c->person?->name;
+                $char = $c->character_name;
+                return $char ? "{$name} as {$char}" : $name;
+            })->filter()->join(', ', ' and ');
+
+            $castNames = $cast->take(6)->map(fn($c) => $c->person?->name)->filter()->join(', ', ' and ');
+
+            $faqs[] = [
+                'question' => "Who stars in {$title->title} and who is in the cast list?",
+                'answer' => "The cast of {$title->title} stars {$castNames}. Detailed character names and talent biographies are available on TonightOnScreen.",
+            ];
+
+            // B2. Characters & Character Names ("{movie_name} characters", "{movie_name} character names")
+            if (!empty($castWithChars)) {
+                $faqs[] = [
+                    'question' => "Who are the main characters in {$title->title}?",
+                    'answer' => "Key characters in {$title->title} include {$castWithChars}.",
+                ];
+            }
+        }
+
+        // C1. Budget & Box Office Collection ("{movie_name} budget", "{movie_name} collection", "{movie_name} budget and collection")
+        if ($title->budget || $title->box_office) {
+            $budgetStr = $title->formatted_budget ?? 'Undisclosed';
+            $boxOfficeStr = $title->formatted_box_office ?? 'Under compilation';
+            $label = $title->box_office_label;
+
+            $faqs[] = [
+                'question' => "What is the budget and box office collection of {$title->title}?",
+                'answer' => "{$title->title} was produced on an estimated budget of {$budgetStr} and grossed a worldwide {$label} of {$boxOfficeStr}.",
+            ];
+
+            // C2. Hit or Flop Commercial Verdict ("{movie_name} hit or flop")
+            if ($title->budget && $title->box_office && $title->box_office_verdict) {
+                $faqs[] = [
+                    'question' => "Is {$title->title} a hit or flop?",
+                    'answer' => "Based on its estimated budget of {$budgetStr} and worldwide box office collection of {$boxOfficeStr}, {$title->title} is classified as a {$title->box_office_verdict} at the box office.",
+                ];
+            }
+        }
+
+        // D1. OTT and Streaming ("where to watch {movie_name}", "{movie_name} OTT", "{movie_name} OTT release date", "{movie_name} on Netflix")
         if ($title->relationLoaded('streamingPlatforms') && $title->streamingPlatforms->isNotEmpty()) {
             $platformList = $title->streamingPlatforms->pluck('name')->join(', ', ' and ');
             $faqs[] = [
-                'question' => "Where can I watch {$title->title} online?",
-                'answer' => "You can stream {$title->title} online on {$platformList}. Check TonightOnScreen for real-time OTT release dates, 4K HDR streaming availability, and subscription options.",
+                'question' => "Where can I watch {$title->title} on OTT?",
+                'answer' => "{$title->title} is currently available to stream online on {$platformList}. Check TonightOnScreen for real-time 4K HDR streaming options and regional availability.",
             ];
         } else {
             $faqs[] = [
-                'question' => "Where can I stream {$title->title}?",
-                'answer' => "Streaming availability for {$title->title} is regularly updated on TonightOnScreen. Keep this page bookmarked for verified OTT platform announcements and theatrical release details.",
+                'question' => "Where to watch {$title->title} online?",
+                'answer' => "Digital streaming and OTT rights for {$title->title} are tracked regularly on TonightOnScreen. Bookmark this page for instant streaming alerts and platform updates.",
             ];
         }
 
-        // 2. Director & Release Date
+        // E1. Director, Writer & Producer ("{movie_name} director", "who directed {movie_name}", "{movie_name} writer", "{movie_name} producer")
         if ($directors->isNotEmpty()) {
             $directorNames = $directors->map(fn($d) => $d->person?->name)->filter()->join(', ', ' and ');
-            if (!empty($directorNames)) {
-                $releasePart = $title->release_date ? " and officially released on " . $title->release_date->format('F d, Y') : '';
-                $faqs[] = [
-                    'question' => "Who directed the {$typeWord} {$title->title} and when was it released?",
-                    'answer' => "{$title->title} was directed by {$directorNames}{$releasePart}. Explore their complete filmography and upcoming projects on TonightOnScreen.",
-                ];
-            }
-        }
-
-        // 3. Lead Cast (targets: "cast of oppenheimer (film)", "fight club cast")
-        if ($cast->isNotEmpty()) {
-            $castNames = $cast->take(5)->map(fn($c) => $c->person?->name)->filter()->join(', ', ' and ');
-            if (!empty($castNames)) {
-                $faqs[] = [
-                    'question' => "Who is in the cast of {$title->title} ({$typeWord})?",
-                    'answer' => "The cast of {$title->title} features {$castNames} in central roles, delivering standout cinematic performances across the story.",
-                ];
-            }
-        }
-
-        // 4. Budget & Box Office / Collection (targets: "super deluxe budget and collection", "kumbalangi nights budget")
-        if ($title->budget || $title->box_office) {
-            $budgetStr = $title->formatted_budget ?? 'Confidential';
-            $boxOfficeStr = $title->formatted_box_office ?? 'Under compilation';
-            $label = $title->box_office_label;
-            $verdictSuffix = $title->box_office_verdict ? " The {$typeWord} is commercially classified as a {$title->box_office_verdict} at the box office." : '';
+            $writerNames = $writers->isNotEmpty() ? $writers->map(fn($w) => $w->person?->name)->filter()->join(', ', ' and ') : null;
+            $writerPart = $writerNames ? " and written by {$writerNames}" : '';
 
             $faqs[] = [
-                'question' => "What is the budget and {$label} of {$title->title}?",
-                'answer' => "{$title->title} was produced on an estimated budget of {$budgetStr} and recorded a worldwide {$label} of {$boxOfficeStr}.{$verdictSuffix}",
-            ];
-
-            // 4b. Hit or Flop Commercial Verdict
-            if ($title->budget && $title->box_office && $title->box_office_verdict) {
-                $faqs[] = [
-                    'question' => "Is {$title->title} a hit or flop at the box office?",
-                    'answer' => "With an estimated budget of {$budgetStr} and worldwide collections reaching {$boxOfficeStr}, {$title->title} is classified as a {$title->box_office_verdict} in commercial theatrical performance.",
-                ];
-            }
-        }
-
-        // 5. Release Date & Runtime (if director didn't already cover release date)
-        if ($title->release_date && $directors->isEmpty()) {
-            $releaseStr = $title->release_date->format('F d, Y');
-            $runtimeStr = $title->runtime_minutes ? " with a total runtime of {$title->runtime_minutes} minutes" : '';
-            $faqs[] = [
-                'question' => "When was {$title->title} released in theatres?",
-                'answer' => "{$title->title} officially premiered on {$releaseStr}{$runtimeStr}.",
+                'question' => "Who directed and wrote {$title->title}?",
+                'answer' => "{$title->title} was directed by {$directorNames}{$writerPart}. Explore their complete filmographies and upcoming releases on TonightOnScreen.",
             ];
         }
 
-        // 6. Story Synopsis (targets: "[title] film", "[title] storyline")
+        // Story Synopsis ("{movie_name} movie", "{movie_name} film")
         if (!empty($title->overview)) {
             $faqs[] = [
-                'question' => "What is the story of {$title->title} ({$typeWord}) about?",
+                'question' => "What is the story of {$title->title} about?",
                 'answer' => SeoHelper::cleanMetaDescription($title->overview, 250),
             ];
         }

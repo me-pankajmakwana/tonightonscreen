@@ -283,7 +283,7 @@
 
     <!-- 2. "Where to Watch" Streaming Availability -->
     @if($title->streamingPlatforms->isNotEmpty())
-        <section class="py-8 bg-white border-b border-slate-200/80">
+        <section id="where-to-watch" class="py-8 bg-white border-b border-slate-200/80 scroll-mt-24">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
@@ -398,7 +398,7 @@
 
     <!-- 4. Top Billed Cast & Crew Section -->
     @if($cast->isNotEmpty() || $directors->isNotEmpty() || $producers->isNotEmpty())
-        <section class="py-12 bg-white border-b border-slate-200/80">
+        <section id="cast" class="py-12 bg-white border-b border-slate-200/80 scroll-mt-24">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
 
                 <!-- Key Filmmakers (Directors & Producers) -->
@@ -406,7 +406,7 @@
                     $filmmakers = $directors->concat($producers)->unique('person_id')->values();
                 @endphp
                 @if($filmmakers->isNotEmpty())
-                    <div>
+                    <div id="crew" class="scroll-mt-24">
                         <div class="flex items-end justify-between mb-6">
                             <div>
                                 <span class="text-[11px] font-bold uppercase tracking-widest text-[#FFA500] block mb-1">Behind The Scenes</span>
@@ -1114,7 +1114,7 @@
 
     <!-- Frequently Asked Questions Section (Rule 1, Rule 8, Rule 12) -->
     @if(!empty($faqs))
-        <section class="py-16 bg-white border-t border-slate-200/80">
+        <section id="faqs" class="py-16 bg-white border-t border-slate-200/80 scroll-mt-24">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-10">
                     <span class="text-[11px] font-bold uppercase tracking-widest text-amber-500 block mb-1">Got Questions?</span>

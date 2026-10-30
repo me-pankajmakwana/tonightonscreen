@@ -31,19 +31,33 @@ class StructuredDataService
 
         // High-intent search keywords for Google/Bing knowledge graph matching
         $keywords = [
+            "{$title->title} movie",
             "{$title->title} film",
+            "{$title->title} release date",
+            "{$title->title} runtime",
+            "{$title->title} characters",
             "cast of {$title->title}",
             "{$title->title} cast",
+            "{$title->title} actors",
+            "who stars in {$title->title}",
+            "{$title->title} budget",
+            "{$title->title} collection",
             "{$title->title} budget and collection",
             "{$title->title} box office collection",
-            "{$title->title} budget",
+            "{$title->title} hit or flop",
+            "where to watch {$title->title}",
+            "{$title->title} OTT",
+            "{$title->title} OTT platform",
+            "who directed {$title->title}",
+            "{$title->title} director",
         ];
         if ($title->relationLoaded('genres') && $title->genres->isNotEmpty()) {
             foreach ($title->genres->pluck('name') as $gName) {
+                $keywords[] = "best {$gName} movies";
                 $keywords[] = "{$gName} movie";
             }
         }
-        $schema['keywords'] = implode(', ', $keywords);
+        $schema['keywords'] = implode(', ', array_unique($keywords));
 
         // Description / Overview
         $desc = $title->overview ?: $title->tagline ?: $title->description;
@@ -222,6 +236,50 @@ class StructuredDataService
         if (!empty($sameAs)) {
             $schema['sameAs'] = array_values(array_unique($sameAs));
         }
+
+        // Keywords mapping for Google Knowledge Graph & SERP pattern matching
+        $roleName = match($person->known_for_department) {
+            'Acting' => ($person->gender === 'Female' ? 'actress' : 'actor'),
+            'Directing' => 'director',
+            'Production' => 'producer',
+            'Writing' => 'screenwriter',
+            default => strtolower($person->known_for_department ?: 'artist'),
+        };
+
+        $kw = [
+            $person->name,
+            "{$person->name} biography",
+            "who is {$person->name}",
+            "{$person->name} details",
+            "{$person->name} age",
+            "{$person->name} date of birth",
+            "{$person->name} birthplace",
+            "{$person->name} native place",
+            "{$person->name} {$roleName}",
+            "{$roleName} {$person->name}",
+            "{$person->name} movies",
+            "{$person->name} TV shows",
+            "{$person->name} movies and TV shows",
+            "{$person->name} filmography",
+            "{$person->name} debut movie",
+            "{$person->name} first movie",
+            "{$person->name} achievements",
+            "{$person->name} total movies count",
+        ];
+
+        if ($person->known_for_department === 'Directing') {
+            $kw[] = "{$person->name} director";
+            $kw[] = "director {$person->name}";
+            $kw[] = "{$person->name} directed movies";
+            $kw[] = "{$person->name} assistant director";
+            $kw[] = "{$person->name} which industry director";
+        } elseif ($person->known_for_department === 'Production') {
+            $kw[] = "{$person->name} producer";
+            $kw[] = "{$person->name} production company";
+            $kw[] = "{$person->name} debut";
+        }
+
+        $schema['keywords'] = implode(', ', array_unique($kw));
 
         return $schema;
     }

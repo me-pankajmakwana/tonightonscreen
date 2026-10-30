@@ -78,7 +78,7 @@ class PersonController extends Controller
      */
     public function show(string $slug)
     {
-        $cacheKey = "person_profile_v3_{$slug}";
+        $cacheKey = "person_profile_v4_{$slug}";
 
         $data = Cache::remember($cacheKey, now()->addHours(24), function () use ($slug) {
             $person = Person::query()
@@ -220,12 +220,53 @@ class PersonController extends Controller
                 $producing
             );
 
-            // SEO Meta Information targeting exact search keywords
+            // SEO Meta Information targeting exact search keywords (Clusters A, B, C, D)
             $debutName = $earliestTitle ? $earliestTitle->title : 'first project';
             $birthPlace = $person->birth_place ?: 'Cinema';
             $seoTitle = "{$person->name} Movies List, Biography, Debut & Hit Films, Birth Place | TonightOnScreen";
             $seoDescription = "Explore {$person->name}'s biography, birth place ({$birthPlace}), debut movie ({$debutName}), hit movies list, total movie count, and full filmography on TonightOnScreen.";
-            $seoKeywords = "{$person->name} birth place, {$person->name} born place, {$person->name} place of birth, {$person->name} biography, {$person->name} debut movie, {$person->name} first movie, {$person->name} hit movies, {$person->name} total movies, {$person->name} movies list, {$person->name} filmography";
+
+            $roleKeywords = [];
+            if ($person->known_for_department === 'Directing' || $directing->isNotEmpty()) {
+                $roleKeywords[] = "{$person->name} director";
+                $roleKeywords[] = "director {$person->name}";
+                $roleKeywords[] = "{$person->name} directed movies";
+                $roleKeywords[] = "{$person->name} assistant director";
+                $roleKeywords[] = "{$person->name} which industry director";
+            }
+            if ($person->known_for_department === 'Production' || $producing->isNotEmpty()) {
+                $roleKeywords[] = "{$person->name} producer";
+                $roleKeywords[] = "{$person->name} production company";
+                $roleKeywords[] = "{$person->name} debut";
+            }
+            if ($person->known_for_department === 'Acting' || $acting->isNotEmpty()) {
+                $roleTerm = $person->gender === 'Female' ? 'actress' : 'actor';
+                $roleKeywords[] = "{$person->name} {$roleTerm}";
+                $roleKeywords[] = "{$roleTerm} {$person->name}";
+            }
+
+            $kwList = array_merge([
+                $person->name,
+                "{$person->name} biography",
+                "who is {$person->name}",
+                "{$person->name} details",
+                "{$person->name} age",
+                "{$person->name} height",
+                "{$person->name} date of birth",
+                "{$person->name} birthplace",
+                "{$person->name} native place",
+                "{$person->name} movies",
+                "{$person->name} TV shows",
+                "{$person->name} movies and TV shows",
+                "{$person->name} filmography",
+                "{$person->name} debut movie",
+                "{$person->name} first movie",
+                "{$person->name} achievements",
+                "{$person->name} total movies count",
+                "{$person->name} hit movies",
+            ], $roleKeywords);
+
+            $seoKeywords = implode(', ', array_unique($kwList));
 
             return [
                 'person' => $person,
@@ -271,7 +312,7 @@ class PersonController extends Controller
 
         $faqs = [];
 
-        // Q1: Biography & Overview
+        // Q1: Biography, Details & Overview (Cluster A: {person} biography, who is {person}, {person} details)
         $topTitlesText = $knownFor->isNotEmpty()
             ? "landmark projects including " . $knownFor->pluck('title')->implode(', ')
             : "their distinguished creative filmography";
@@ -285,12 +326,12 @@ class PersonController extends Controller
         }
 
         $faqs[] = [
-            'question' => "Who is {$person->name}? ({$person->name} Biography & Overview)",
+            'question' => "Who is {$person->name}? ({$person->name} Biography, Details & Overview)",
             'answer' => "{$person->name} is a celebrated {$primaryRole} renowned for {$topTitlesText}.{$bioSnippet} On TonightOnScreen, {$person->name} maintains an average critical rating of {$stats['avgRating']}/10 across their filmography.",
         ];
 
-        // Q2: Birth Place / Born Place / Place of Birth
-        if ($person->birth_place) {
+        // Q2: Age, Date of Birth, Birthplace & Native Place (Cluster A: age, height, dob, birthplace, native place)
+        if ($person->birth_place || $person->birth_date) {
             $dateText = $person->birth_date ? " on " . $person->birth_date->format('F d, Y') : "";
             $ageText = "";
             if ($person->birth_date) {
@@ -300,33 +341,34 @@ class PersonController extends Controller
                     $ageText = " (currently {$person->age} years old)";
                 }
             }
+            $placeText = $person->birth_place ?: "the international cinema industry";
 
             $faqs[] = [
-                'question' => "Where was {$person->name} born? ({$person->name} Place of Birth & Born Place)",
-                'answer' => "{$person->name} was born in {$person->birth_place}{$dateText}{$ageText}. Their place of birth and early upbringing provided the cultural foundation for an acclaimed cinema career spanning {$stats['careerSpan']}.",
+                'question' => "What is {$person->name}'s age, date of birth, and birthplace / native place?",
+                'answer' => "{$person->name} was born in {$placeText}{$dateText}{$ageText}. Fans searching for {$person->name}'s native place and origin can trace their beginnings to {$placeText}, which formed the foundation of their career spanning {$stats['careerSpan']}.",
             ];
         }
 
-        // Q3: Debut Movie / First Movie
+        // Q3: Debut Movie / First Movie (Cluster B/C/D: debut movie, first movie, debut)
         if ($stats['debutTitle']) {
             $yearStr = $stats['debutTitle']->release_date ? " in " . $stats['debutTitle']->release_date->format('Y') : "";
             $debutRoleText = !empty($stats['debutJob']) ? " as {$stats['debutJob']}" : "";
             $faqs[] = [
                 'question' => "What was {$person->name}'s debut movie (first movie)?",
-                'answer' => "{$person->name}'s official debut movie (first cataloged project) is {$stats['debutTitle']->title}, released{$yearStr}{$debutRoleText}. This project launched their career timeline in the industry.",
+                'answer' => "{$person->name}'s official debut movie (first cataloged project) is {$stats['debutTitle']->title}, released{$yearStr}{$debutRoleText}. This project launched their career timeline in the film industry.",
             ];
         }
 
-        // Q4: Hit Movies & Top Projects
+        // Q4: Achievements, Awards & Hit Movies (Cluster B: achievements, awards, hit movies)
         if ($stats['highestRatedTitle']) {
             $hitList = $stats['hitMovies']->map(fn($t) => "{$t->title} (" . number_format((float)$t->rating, 1) . "★)")->implode(', ');
             $faqs[] = [
-                'question' => "What are {$person->name}'s biggest hit movies and highest-rated films?",
-                'answer' => "{$person->name}'s highest-rated project on TonightOnScreen is {$stats['highestRatedTitle']->title} with a stellar rating of " . number_format((float)$stats['highestRatedTitle']->rating, 1) . "/10. Other blockbuster hit movies and critically acclaimed works include {$hitList}.",
+                'question' => "What are {$person->name}'s career achievements, awards, and biggest hit movies?",
+                'answer' => "{$person->name}'s highest-rated project on TonightOnScreen is {$stats['highestRatedTitle']->title} with a stellar rating of " . number_format((float)$stats['highestRatedTitle']->rating, 1) . "/10. Other blockbuster hit movies and critically acclaimed achievements include {$hitList}.",
             ];
         }
 
-        // Q5: Total Movies Count & Career Statistics
+        // Q5: Total Movies Count & Movies/TV Shows (Cluster B: total movies count, movies and tv shows)
         $breakdown = [];
         if ($acting->isNotEmpty()) $breakdown[] = $acting->count() . " acting";
         if ($directing->isNotEmpty()) $breakdown[] = $directing->count() . " directing";
@@ -335,17 +377,37 @@ class PersonController extends Controller
         $breakdownStr = !empty($breakdown) ? " (" . implode(', ', $breakdown) . ")" : "";
 
         $faqs[] = [
-            'question' => "How many total movies has {$person->name} done? ({$person->name} Total Movies Count)",
-            'answer' => "{$person->name} has worked on {$stats['totalCredits']} total cataloged titles on TonightOnScreen spanning {$stats['careerSpan']}, featuring {$stats['totalMoviesCount']} feature movies and {$stats['totalSeriesCount']} series{$breakdownStr}. Their most frequent genre is {$stats['topGenre']}.",
+            'question' => "How many total movies and TV shows has {$person->name} done? ({$person->name} Total Movies Count)",
+            'answer' => "{$person->name} has worked on {$stats['totalCredits']} total cataloged titles on TonightOnScreen spanning {$stats['careerSpan']}, featuring {$stats['totalMoviesCount']} feature movies and {$stats['totalSeriesCount']} TV shows/series{$breakdownStr}. Their most frequent genre is {$stats['topGenre']}.",
         ];
 
-        // Q6: Movies List & Filmography
+        // Q6: Movies List & Complete Filmography (Cluster B/C/D: {person} movies, filmography)
         $faqs[] = [
             'question' => "Where can I find {$person->name}'s complete movies list and filmography?",
             'answer' => "You can explore {$person->name}'s complete movies list and filmography on TonightOnScreen. The interactive career timeline allows fans to filter their film roster by decade, view character roles, and inspect curator ratings.",
         ];
 
-        // Q7: Box Office Collection / Gross
+        // Q7: Director Specific FAQ (Cluster C: director {person}, {person} directed movies, which industry director)
+        if ($directing->isNotEmpty() || $person->known_for_department === 'Directing') {
+            $directedTitles = $directing->map(fn($c) => $c->creditable?->title)->filter()->unique()->take(4)->implode(', ');
+            $industryName = $person->isIndian() ? "Indian cinema" : "international cinema";
+
+            $faqs[] = [
+                'question' => "Which industry does director {$person->name} work in and what movies have they directed?",
+                'answer' => "Director {$person->name} is a renowned filmmaker prominent in {$industryName}" . ($directedTitles ? ", having directed acclaimed titles including {$directedTitles}" : "") . ". They maintain an active directorial timeline cataloged on TonightOnScreen.",
+            ];
+        }
+
+        // Q8: Producer Specific FAQ (Cluster D: {person} producer, production company, debut)
+        if ($producing->isNotEmpty() || $person->known_for_department === 'Production') {
+            $producedTitles = $producing->map(fn($c) => $c->creditable?->title)->filter()->unique()->take(3)->implode(', ');
+            $faqs[] = [
+                'question' => "What films has {$person->name} produced as a producer or banner?",
+                'answer' => "As a film producer, {$person->name} has backed major cinematic projects" . ($producedTitles ? " including {$producedTitles}" : "") . ". Fans can explore their production portfolio and creative partnerships on TonightOnScreen.",
+            ];
+        }
+
+        // Q9: Box Office Collection / Gross
         if ($stats['totalBoxOffice'] > 10000000) {
             $isIndianTalent = $person->isIndian() || ($stats['highestGrossing'] && $stats['highestGrossing']->isIndian());
 

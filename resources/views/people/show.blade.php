@@ -44,6 +44,9 @@
     if (!empty($stats['hitMovies'])) {
         $personSchema['knowsAbout'] = $stats['hitMovies']->pluck('title')->toArray();
     }
+    if (!empty($seoKeywords)) {
+        $personSchema['keywords'] = $seoKeywords;
+    }
 
     $faqSchema = null;
     if (!empty($faqs)) {
@@ -197,7 +200,7 @@
                     </div>
 
                     <!-- Biography Narrative -->
-                    <div class="space-y-2.5">
+                    <div id="bio" class="space-y-2.5 scroll-mt-8">
                         <h2 class="text-xs font-bold uppercase tracking-widest text-slate-400">{{ $person->name }} Biography & Career Overview</h2>
                         <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-3xl">
                             {{ $person->biography ?: $person->name . ' is an accomplished artist in the global entertainment industry with distinguished contributions across multiple premier titles.' }}
@@ -243,7 +246,7 @@
     </div>
 
     <!-- 2. Programmatic Fast Facts & Quick Answers (Google SERP Snippets: Birth Place, Debut Movie, Hit Movies, Total Movies) -->
-    <section class="py-10 sm:py-12 bg-white border-b border-slate-200/80">
+    <section id="fast-facts" class="py-10 sm:py-12 bg-white border-b border-slate-200/80 scroll-mt-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
                 <div>
@@ -355,8 +358,8 @@
 
     <!-- 3. Filmography Explorer & Visual Career Timeline -->
     <section 
-        id="filmography-timeline" 
-        class="py-12 sm:py-16 bg-[#f8fafc] min-h-[600px] border-t border-slate-200/80" 
+        id="filmography" 
+        class="py-12 sm:py-16 bg-[#f8fafc] min-h-[600px] border-t border-slate-200/80 scroll-mt-6 relative" 
         x-data="{
             activeDepartment: 'all',
             activeDecade: 'all',
@@ -390,6 +393,8 @@
             }
         }"
     >
+        <div id="timeline" class="absolute -top-12"></div>
+        <div id="filmography-timeline" class="absolute -top-12"></div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Header -->
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 sm:mb-10 pb-6 border-b border-slate-200/80">
@@ -877,7 +882,7 @@
 
     <!-- 4. Frequently Asked Questions (FAQ) Section -->
     @if(!empty($faqs))
-        <section class="py-16 bg-[#f8fafc] border-t border-slate-200/80">
+        <section id="faqs" class="py-16 bg-[#f8fafc] border-t border-slate-200/80 scroll-mt-6">
             <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Section Header -->
                 <div class="text-center max-w-2xl mx-auto mb-10">

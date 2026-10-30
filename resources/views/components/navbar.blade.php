@@ -137,6 +137,67 @@
                         x-transition:leave-end="opacity-0 -translate-y-1 scale-98"
                         class="absolute right-0 mt-2 w-80 sm:w-96 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-200/90 py-2 z-50 overflow-hidden divide-y divide-slate-100 text-xs"
                     >
+                        <!-- Discovery / Recommendation Section (Pattern F) -->
+                        <template x-if="results.discovery && results.discovery.length > 0">
+                            <div class="p-2 space-y-1 bg-amber-50/50 border-b border-amber-100">
+                                <span class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-700 block">
+                                    Recommendations & Curated Guides
+                                </span>
+                                <template x-for="item in results.discovery" :key="item.url">
+                                    <a 
+                                        :href="item.url" 
+                                        class="flex items-center gap-3 p-2 rounded-xl hover:bg-amber-100/70 transition-colors group"
+                                    >
+                                        <div class="w-8 h-8 rounded-lg bg-amber-500 text-white flex items-center justify-center font-black text-xs shrink-0 shadow-xs">
+                                            ★
+                                        </div>
+                                        <div class="flex-grow min-w-0">
+                                            <div class="flex items-center gap-1.5">
+                                                <h4 class="font-bold text-slate-900 group-hover:text-amber-700 transition-colors truncate" x-text="item.label"></h4>
+                                                <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-200/80 text-amber-900 shrink-0" x-text="item.badge"></span>
+                                            </div>
+                                            <span class="text-[10px] text-slate-500">Curated rankings & streaming list</span>
+                                        </div>
+                                    </a>
+                                </template>
+                            </div>
+                        </template>
+
+                        <!-- Talent Section (Prioritized when query has Person Intent) -->
+                        <template x-if="results.is_person && results.people && results.people.length > 0">
+                            <div class="p-2 space-y-1 bg-amber-50/40 border-b border-amber-100/60">
+                                <span class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-800 block">
+                                    Talent & Stars Match
+                                </span>
+                                <template x-for="person in results.people" :key="'priority-' + person.slug">
+                                    <a 
+                                        :href="person.url" 
+                                        class="flex items-center gap-3 p-2 rounded-xl hover:bg-white transition-colors group border border-transparent hover:border-amber-200"
+                                    >
+                                        <div class="w-9 h-9 rounded-full bg-slate-200 overflow-hidden shrink-0 shadow-xs flex items-center justify-center border border-amber-300/60">
+                                            <template x-if="person.photo">
+                                                <img :src="person.photo" :alt="person.name" class="w-full h-full object-cover">
+                                            </template>
+                                            <template x-if="!person.photo">
+                                                <svg class="w-5 h-5 text-slate-400 mt-1" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"/>
+                                                </svg>
+                                            </template>
+                                        </div>
+                                        <div class="flex-grow min-w-0">
+                                            <div class="flex items-center gap-1.5 mb-0.5">
+                                                <h4 class="font-bold text-slate-900 group-hover:text-amber-600 transition-colors truncate" x-text="person.name"></h4>
+                                                <template x-if="person.intent_badge">
+                                                    <span class="px-1.5 py-0.2 rounded text-[9px] font-black bg-amber-200 text-amber-900 border border-amber-400/50 shrink-0" x-text="person.intent_badge"></span>
+                                                </template>
+                                            </div>
+                                            <p class="text-[10px] text-slate-500 font-medium" x-text="person.role"></p>
+                                        </div>
+                                    </a>
+                                </template>
+                            </div>
+                        </template>
+
                         <!-- Titles Section -->
                         <template x-if="results.titles && results.titles.length > 0">
                             <div class="p-2 space-y-1">
@@ -157,6 +218,9 @@
                                                     :class="item.is_series ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-700'"
                                                     x-text="item.type_label"
                                                 ></span>
+                                                <template x-if="item.intent_badge">
+                                                    <span class="px-1.5 py-0.2 rounded text-[9px] font-black bg-amber-100 text-amber-800 border border-amber-300/60 shrink-0" x-text="item.intent_badge"></span>
+                                                </template>
                                             </div>
                                             <div class="flex items-center gap-2 text-[11px] text-slate-400">
                                                 <span x-text="item.year || 'Cinema'"></span>
@@ -170,8 +234,8 @@
                             </div>
                         </template>
 
-                        <!-- Talent Section -->
-                        <template x-if="results.people && results.people.length > 0">
+                        <!-- Standard Talent Section (when query is general) -->
+                        <template x-if="!results.is_person && results.people && results.people.length > 0">
                             <div class="p-2 space-y-1">
                                 <span class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
                                     Talent & Stars
@@ -191,8 +255,13 @@
                                                 </svg>
                                             </template>
                                         </div>
-                                        <div class="min-w-0">
-                                            <h4 class="font-bold text-slate-900 group-hover:text-amber-600 transition-colors truncate" x-text="person.name"></h4>
+                                        <div class="flex-grow min-w-0">
+                                            <div class="flex items-center gap-1.5 mb-0.5">
+                                                <h4 class="font-bold text-slate-900 group-hover:text-amber-600 transition-colors truncate" x-text="person.name"></h4>
+                                                <template x-if="person.intent_badge">
+                                                    <span class="px-1.5 py-0.2 rounded text-[9px] font-black bg-amber-100 text-amber-800 border border-amber-300/60 shrink-0" x-text="person.intent_badge"></span>
+                                                </template>
+                                            </div>
                                             <p class="text-[10px] text-slate-400 font-medium" x-text="person.role"></p>
                                         </div>
                                     </a>

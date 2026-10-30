@@ -1,0 +1,85 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-serif: 'Instrument Serif', Georgia, serif;
+    --font-script: 'Caveat', cursive;
+
+    /* Official TonightOnScreen Logo Color Palette */
+    --color-midnight: #010629;
+    --color-midnight-surface: #071038;
+    --color-midnight-deep: #00041d;
+    --color-midnight-border: #0d163f;
+
+    --color-logo-gold: #FFA500;
+    --color-logo-gold-hover: #FFB41F;
+    --color-logo-gold-deep: #EA8A00;
+    --color-logo-gold-soft: rgba(255, 165, 0, 0.12);
+
+    --color-canvas: #f8fafc;
+}
+
+/* Custom Utilities for Entertainment Mockup */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Logo Color Utility Classes */
+.bg-midnight {
+    background-color: #010629;
+}
+.bg-midnight-surface {
+    background-color: #071038;
+}
+.bg-midnight-deep {
+    background-color: #00041d;
+}
+.text-midnight {
+    color: #010629;
+}
+.border-midnight {
+    border-color: #0d163f;
+}
+
+.text-logo-gold {
+    color: #FFA500;
+}
+.bg-logo-gold {
+    background-color: #FFA500;
+}
+.border-logo-gold {
+    border-color: #FFA500;
+}
+.bg-logo-gold-soft {
+    background-color: rgba(255, 165, 0, 0.12);
+}
+
+/* Legacy Theme Replacements mapped directly to Official Logo Palette */
+.text-terracotta {
+    color: #FFA500;
+}
+.bg-terracotta-soft {
+    background-color: rgba(255, 165, 0, 0.12);
+}
+
+.card-shadow-hover {
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-shadow-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px -8px rgba(1, 6, 41, 0.12);
+}
+
+[x-cloak] {
+    display: none !important;
+}
+

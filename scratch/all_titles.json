@@ -1,0 +1,1640 @@
+[
+    {
+        "id": 1,
+        "title": "Oppenheimer",
+        "slug": "oppenheimer-2023",
+        "release_date": "2023-07-21",
+        "status": "released"
+    },
+    {
+        "id": 2,
+        "title": "Breaking Bad",
+        "slug": "breaking-bad-2008",
+        "release_date": "2008-01-20",
+        "status": "ended"
+    },
+    {
+        "id": 3,
+        "title": "The Last Horizon",
+        "slug": "the-last-horizon-2025",
+        "release_date": "2025-03-15",
+        "status": "released"
+    },
+    {
+        "id": 4,
+        "title": "Shadow Protocol",
+        "slug": "shadow-protocol-2025",
+        "release_date": "2025-01-10",
+        "status": "released"
+    },
+    {
+        "id": 5,
+        "title": "Broken Dreams",
+        "slug": "broken-dreams-2024",
+        "release_date": "2024-11-20",
+        "status": "released"
+    },
+    {
+        "id": 6,
+        "title": "The Silent Path",
+        "slug": "the-silent-path-2025",
+        "release_date": "2025-02-05",
+        "status": "released"
+    },
+    {
+        "id": 7,
+        "title": "Beyond the Sky",
+        "slug": "beyond-the-sky-2024",
+        "release_date": "2024-10-18",
+        "status": "released"
+    },
+    {
+        "id": 8,
+        "title": "The Gilded Crown",
+        "slug": "the-gilded-crown-2023",
+        "release_date": "2023-09-14",
+        "status": "released"
+    },
+    {
+        "id": 9,
+        "title": "Midnight Symphony",
+        "slug": "midnight-symphony-2023",
+        "release_date": "2023-12-25",
+        "status": "released"
+    },
+    {
+        "id": 10,
+        "title": "Neon Nights",
+        "slug": "neon-nights-2024",
+        "release_date": "2024-06-08",
+        "status": "released"
+    },
+    {
+        "id": 11,
+        "title": "Echoes of Silence",
+        "slug": "echoes-of-silence-2024",
+        "release_date": "2024-04-12",
+        "status": "released"
+    },
+    {
+        "id": 12,
+        "title": "Cosmic Comedy",
+        "slug": "cosmic-comedy-2025",
+        "release_date": "2025-02-14",
+        "status": "released"
+    },
+    {
+        "id": 13,
+        "title": "The Dark Knight",
+        "slug": "the-dark-knight-2008",
+        "release_date": "2008-07-18",
+        "status": "released"
+    },
+    {
+        "id": 14,
+        "title": "Interstellar",
+        "slug": "interstellar-2014",
+        "release_date": "2014-11-07",
+        "status": "released"
+    },
+    {
+        "id": 15,
+        "title": "Memento",
+        "slug": "memento-2000",
+        "release_date": "2000-09-05",
+        "status": "released"
+    },
+    {
+        "id": 16,
+        "title": "Inception",
+        "slug": "inception-2010",
+        "release_date": "2010-06-15",
+        "status": "released"
+    },
+    {
+        "id": 17,
+        "title": "The Wolf of Wall Street",
+        "slug": "the-wolf-of-wall-street-2013",
+        "release_date": "2013-06-15",
+        "status": "released"
+    },
+    {
+        "id": 18,
+        "title": "The Revenant",
+        "slug": "the-revenant-2015",
+        "release_date": "2015-06-15",
+        "status": "released"
+    },
+    {
+        "id": 19,
+        "title": "Peaky Blinders",
+        "slug": "peaky-blinders-2013",
+        "release_date": "2013-06-15",
+        "status": "released"
+    },
+    {
+        "id": 20,
+        "title": "Iron Man",
+        "slug": "iron-man-2008",
+        "release_date": "2008-06-15",
+        "status": "released"
+    },
+    {
+        "id": 21,
+        "title": "Lost in Translation",
+        "slug": "lost-in-translation-2003",
+        "release_date": "2003-06-15",
+        "status": "released"
+    },
+    {
+        "id": 22,
+        "title": "Marriage Story",
+        "slug": "marriage-story-2019",
+        "release_date": "2019-06-15",
+        "status": "released"
+    },
+    {
+        "id": 23,
+        "title": "Barbie",
+        "slug": "barbie-2023",
+        "release_date": "2023-06-15",
+        "status": "released"
+    },
+    {
+        "id": 24,
+        "title": "Top Gun: Maverick",
+        "slug": "top-gun-maverick-2022",
+        "release_date": "2022-06-15",
+        "status": "released"
+    },
+    {
+        "id": 25,
+        "title": "Mission: Impossible - Fallout",
+        "slug": "mission-impossible-fallout-2018",
+        "release_date": "2018-06-15",
+        "status": "released"
+    },
+    {
+        "id": 26,
+        "title": "The Prestige",
+        "slug": "the-prestige-2006",
+        "release_date": "2006-06-15",
+        "status": "released"
+    },
+    {
+        "id": 27,
+        "title": "Dune: Part Two",
+        "slug": "dune-part-two-2024",
+        "release_date": "2024-06-15",
+        "status": "released"
+    },
+    {
+        "id": 28,
+        "title": "Challengers",
+        "slug": "challengers-2024",
+        "release_date": "2024-06-15",
+        "status": "released"
+    },
+    {
+        "id": 29,
+        "title": "Fight Club",
+        "slug": "fight-club-1999",
+        "release_date": "1999-06-15",
+        "status": "released"
+    },
+    {
+        "id": 30,
+        "title": "Once Upon a Time in Hollywood",
+        "slug": "once-upon-a-time-in-hollywood-2019",
+        "release_date": "2019-06-15",
+        "status": "released"
+    },
+    {
+        "id": 31,
+        "title": "Little Women",
+        "slug": "little-women-2019",
+        "release_date": "2019-06-15",
+        "status": "released"
+    },
+    {
+        "id": 32,
+        "title": "Jawan",
+        "slug": "jawan-2023",
+        "release_date": "2023-06-15",
+        "status": "released"
+    },
+    {
+        "id": 33,
+        "title": "Pathaan",
+        "slug": "pathaan-2023",
+        "release_date": "2023-06-15",
+        "status": "released"
+    },
+    {
+        "id": 34,
+        "title": "Dilwale Dulhania Le Jayenge",
+        "slug": "dilwale-dulhania-le-jayenge-1995",
+        "release_date": "1995-06-15",
+        "status": "released"
+    },
+    {
+        "id": 35,
+        "title": "Swades",
+        "slug": "swades-2004",
+        "release_date": "2004-06-15",
+        "status": "released"
+    },
+    {
+        "id": 36,
+        "title": "Piku",
+        "slug": "piku-2015",
+        "release_date": "2015-06-15",
+        "status": "released"
+    },
+    {
+        "id": 37,
+        "title": "Padmaavat",
+        "slug": "padmaavat-2018",
+        "release_date": "2018-06-15",
+        "status": "released"
+    },
+    {
+        "id": 38,
+        "title": "Sholay",
+        "slug": "sholay-1975",
+        "release_date": "1975-06-15",
+        "status": "released"
+    },
+    {
+        "id": 39,
+        "title": "Black",
+        "slug": "black-2005",
+        "release_date": "2005-06-15",
+        "status": "released"
+    },
+    {
+        "id": 40,
+        "title": "Barfi!",
+        "slug": "barfi-2012",
+        "release_date": "2012-06-15",
+        "status": "released"
+    },
+    {
+        "id": 41,
+        "title": "Bajirao Mastani",
+        "slug": "bajirao-mastani-2015",
+        "release_date": "2015-06-15",
+        "status": "released"
+    },
+    {
+        "id": 42,
+        "title": "Citadel",
+        "slug": "citadel-2023",
+        "release_date": "2023-06-15",
+        "status": "released"
+    },
+    {
+        "id": 43,
+        "title": "3 Idiots",
+        "slug": "3-idiots-2009",
+        "release_date": "2009-06-15",
+        "status": "released"
+    },
+    {
+        "id": 44,
+        "title": "Dangal",
+        "slug": "dangal-2016",
+        "release_date": "2016-06-15",
+        "status": "released"
+    },
+    {
+        "id": 45,
+        "title": "Lagaan",
+        "slug": "lagaan-2001",
+        "release_date": "2001-06-15",
+        "status": "released"
+    },
+    {
+        "id": 46,
+        "title": "Gangubai Kathiawadi",
+        "slug": "gangubai-kathiawadi-2022",
+        "release_date": "2022-06-15",
+        "status": "released"
+    },
+    {
+        "id": 47,
+        "title": "Raazi",
+        "slug": "raazi-2018",
+        "release_date": "2018-06-15",
+        "status": "released"
+    },
+    {
+        "id": 48,
+        "title": "Gully Boy",
+        "slug": "gully-boy-2019",
+        "release_date": "2019-06-15",
+        "status": "released"
+    },
+    {
+        "id": 49,
+        "title": "War",
+        "slug": "war-2019",
+        "release_date": "2019-06-15",
+        "status": "released"
+    },
+    {
+        "id": 50,
+        "title": "Zindagi Na Milegi Dobara",
+        "slug": "zindagi-na-milegi-dobara-2011",
+        "release_date": "2011-06-15",
+        "status": "released"
+    },
+    {
+        "id": 51,
+        "title": "Super 30",
+        "slug": "super-30-2019",
+        "release_date": "2019-06-15",
+        "status": "released"
+    },
+    {
+        "id": 52,
+        "title": "Animal",
+        "slug": "animal-2023",
+        "release_date": "2023-06-15",
+        "status": "released"
+    },
+    {
+        "id": 53,
+        "title": "Rockstar",
+        "slug": "rockstar-2011",
+        "release_date": "2011-06-15",
+        "status": "released"
+    },
+    {
+        "id": 54,
+        "title": "Bajrangi Bhaijaan",
+        "slug": "bajrangi-bhaijaan-2015",
+        "release_date": "2015-06-15",
+        "status": "released"
+    },
+    {
+        "id": 55,
+        "title": "Sultan",
+        "slug": "sultan-2016",
+        "release_date": "2016-06-15",
+        "status": "released"
+    },
+    {
+        "id": 56,
+        "title": "Tiger 3",
+        "slug": "tiger-3-2023",
+        "release_date": "2023-06-15",
+        "status": "released"
+    },
+    {
+        "id": 57,
+        "title": "Jab We Met",
+        "slug": "jab-we-met-2007",
+        "release_date": "2007-06-15",
+        "status": "released"
+    },
+    {
+        "id": 58,
+        "title": "Jaane Jaan",
+        "slug": "jaane-jaan-2023",
+        "release_date": "2023-06-15",
+        "status": "released"
+    },
+    {
+        "id": 59,
+        "title": "Jurassic Park",
+        "slug": "jurassic-park-1993",
+        "release_date": "1993-06-15",
+        "status": "released"
+    },
+    {
+        "id": 60,
+        "title": "Schindler's List",
+        "slug": "schindlers-list-1993",
+        "release_date": "1993-06-15",
+        "status": "released"
+    },
+    {
+        "id": 61,
+        "title": "Pulp Fiction",
+        "slug": "pulp-fiction-1994",
+        "release_date": "1994-06-15",
+        "status": "released"
+    },
+    {
+        "id": 62,
+        "title": "Titanic",
+        "slug": "titanic-1997",
+        "release_date": "1997-06-15",
+        "status": "released"
+    },
+    {
+        "id": 63,
+        "title": "Avatar",
+        "slug": "avatar-2009",
+        "release_date": "2009-06-15",
+        "status": "released"
+    },
+    {
+        "id": 64,
+        "title": "RRR",
+        "slug": "rrr-2022",
+        "release_date": "2022-06-15",
+        "status": "released"
+    },
+    {
+        "id": 65,
+        "title": "Baahubali 2: The Conclusion",
+        "slug": "baahubali-2-the-conclusion-2017",
+        "release_date": "2017-06-15",
+        "status": "released"
+    },
+    {
+        "id": 66,
+        "title": "The Godfather",
+        "slug": "the-godfather-1972",
+        "release_date": "1972-05-15",
+        "status": "released"
+    },
+    {
+        "id": 67,
+        "title": "The Shawshank Redemption",
+        "slug": "the-shawshank-redemption-1994",
+        "release_date": "1994-05-15",
+        "status": "released"
+    },
+    {
+        "id": 68,
+        "title": "The Matrix",
+        "slug": "the-matrix-1999",
+        "release_date": "1999-05-15",
+        "status": "released"
+    },
+    {
+        "id": 69,
+        "title": "Gladiator",
+        "slug": "gladiator-2000",
+        "release_date": "2000-05-15",
+        "status": "released"
+    },
+    {
+        "id": 70,
+        "title": "The Lord of the Rings: The Fellowship of the Ring",
+        "slug": "the-lord-of-the-rings-the-fellowship-of-the-ring-2001",
+        "release_date": "2001-05-15",
+        "status": "released"
+    },
+    {
+        "id": 71,
+        "title": "Goodfellas",
+        "slug": "goodfellas-1990",
+        "release_date": "1990-05-15",
+        "status": "released"
+    },
+    {
+        "id": 72,
+        "title": "Se7en",
+        "slug": "se7en-1995",
+        "release_date": "1995-05-15",
+        "status": "released"
+    },
+    {
+        "id": 73,
+        "title": "Forrest Gump",
+        "slug": "forrest-gump-1994",
+        "release_date": "1994-05-15",
+        "status": "released"
+    },
+    {
+        "id": 74,
+        "title": "Avengers: Endgame",
+        "slug": "avengers-endgame-2019",
+        "release_date": "2019-05-15",
+        "status": "released"
+    },
+    {
+        "id": 75,
+        "title": "The Silence of the Lambs",
+        "slug": "the-silence-of-the-lambs-1991",
+        "release_date": "1991-05-15",
+        "status": "released"
+    },
+    {
+        "id": 76,
+        "title": "Game of Thrones",
+        "slug": "game-of-thrones-2011",
+        "release_date": "2011-05-15",
+        "status": "released"
+    },
+    {
+        "id": 77,
+        "title": "Stranger Things",
+        "slug": "stranger-things-2016",
+        "release_date": "2016-05-15",
+        "status": "released"
+    },
+    {
+        "id": 78,
+        "title": "The Last of Us",
+        "slug": "the-last-of-us-2023",
+        "release_date": "2023-05-15",
+        "status": "released"
+    },
+    {
+        "id": 79,
+        "title": "Chernobyl",
+        "slug": "chernobyl-2019",
+        "release_date": "2019-05-15",
+        "status": "released"
+    },
+    {
+        "id": 80,
+        "title": "Succession",
+        "slug": "succession-2018",
+        "release_date": "2018-05-15",
+        "status": "released"
+    },
+    {
+        "id": 81,
+        "title": "True Detective",
+        "slug": "true-detective-2014",
+        "release_date": "2014-05-15",
+        "status": "released"
+    },
+    {
+        "id": 82,
+        "title": "The Dark Knight Rises",
+        "slug": "the-dark-knight-rises-2012",
+        "release_date": "2012-05-15",
+        "status": "released"
+    },
+    {
+        "id": 83,
+        "title": "Blade Runner 2049",
+        "slug": "blade-runner-2049-2017",
+        "release_date": "2017-05-15",
+        "status": "released"
+    },
+    {
+        "id": 84,
+        "title": "La La Land",
+        "slug": "la-la-land-2016",
+        "release_date": "2016-05-15",
+        "status": "released"
+    },
+    {
+        "id": 85,
+        "title": "Joker",
+        "slug": "joker-2019",
+        "release_date": "2019-05-15",
+        "status": "released"
+    },
+    {
+        "id": 86,
+        "title": "The Departed",
+        "slug": "the-departed-2006",
+        "release_date": "2006-05-15",
+        "status": "released"
+    },
+    {
+        "id": 87,
+        "title": "Good Will Hunting",
+        "slug": "good-will-hunting-1997",
+        "release_date": "1997-05-15",
+        "status": "released"
+    },
+    {
+        "id": 88,
+        "title": "Django Unchained",
+        "slug": "django-unchained-2012",
+        "release_date": "2012-05-15",
+        "status": "released"
+    },
+    {
+        "id": 89,
+        "title": "Inglourious Basterds",
+        "slug": "inglourious-basterds-2009",
+        "release_date": "2009-05-15",
+        "status": "released"
+    },
+    {
+        "id": 90,
+        "title": "The Truman Show",
+        "slug": "the-truman-show-1998",
+        "release_date": "1998-05-15",
+        "status": "released"
+    },
+    {
+        "id": 91,
+        "title": "K.G.F: Chapter 1",
+        "slug": "kgf-chapter-1-2018",
+        "release_date": "2018-05-15",
+        "status": "released"
+    },
+    {
+        "id": 92,
+        "title": "K.G.F: Chapter 2",
+        "slug": "kgf-chapter-2-2022",
+        "release_date": "2022-05-15",
+        "status": "released"
+    },
+    {
+        "id": 93,
+        "title": "Pushpa: The Rise",
+        "slug": "pushpa-the-rise-2021",
+        "release_date": "2021-05-15",
+        "status": "released"
+    },
+    {
+        "id": 94,
+        "title": "Pushpa 2: The Rule",
+        "slug": "pushpa-2-the-rule-2024",
+        "release_date": "2024-05-15",
+        "status": "released"
+    },
+    {
+        "id": 95,
+        "title": "Salaar: Part 1 \u2013 Ceasefire",
+        "slug": "salaar-part-1-ceasefire-2023",
+        "release_date": "2023-05-15",
+        "status": "released"
+    },
+    {
+        "id": 96,
+        "title": "Kalki 2898 AD",
+        "slug": "kalki-2898-ad-2024",
+        "release_date": "2024-05-15",
+        "status": "released"
+    },
+    {
+        "id": 97,
+        "title": "Baahubali: The Beginning",
+        "slug": "baahubali-the-beginning-2015",
+        "release_date": "2015-05-15",
+        "status": "released"
+    },
+    {
+        "id": 98,
+        "title": "Jailer",
+        "slug": "jailer-2023",
+        "release_date": "2023-05-15",
+        "status": "released"
+    },
+    {
+        "id": 99,
+        "title": "Vikram",
+        "slug": "vikram-2022",
+        "release_date": "2022-05-15",
+        "status": "released"
+    },
+    {
+        "id": 100,
+        "title": "Leo",
+        "slug": "leo-2023",
+        "release_date": "2023-05-15",
+        "status": "released"
+    },
+    {
+        "id": 101,
+        "title": "Gangs of Wasseypur",
+        "slug": "gangs-of-wasseypur-2012",
+        "release_date": "2012-05-15",
+        "status": "released"
+    },
+    {
+        "id": 102,
+        "title": "Sacred Games",
+        "slug": "sacred-games-2018",
+        "release_date": "2018-05-15",
+        "status": "released"
+    },
+    {
+        "id": 103,
+        "title": "The Family Man",
+        "slug": "the-family-man-2019",
+        "release_date": "2019-05-15",
+        "status": "released"
+    },
+    {
+        "id": 104,
+        "title": "Mirzapur",
+        "slug": "mirzapur-2018",
+        "release_date": "2018-05-15",
+        "status": "released"
+    },
+    {
+        "id": 105,
+        "title": "Panchayat",
+        "slug": "panchayat-2020",
+        "release_date": "2020-05-15",
+        "status": "released"
+    },
+    {
+        "id": 106,
+        "title": "Delhi Crime",
+        "slug": "delhi-crime-2019",
+        "release_date": "2019-05-15",
+        "status": "released"
+    },
+    {
+        "id": 107,
+        "title": "Scam 1992: The Harshad Mehta Story",
+        "slug": "scam-1992-the-harshad-mehta-story-2020",
+        "release_date": "2020-05-15",
+        "status": "released"
+    },
+    {
+        "id": 108,
+        "title": "Stree 2",
+        "slug": "stree-2-2024",
+        "release_date": "2024-05-15",
+        "status": "released"
+    },
+    {
+        "id": 109,
+        "title": "Drishyam",
+        "slug": "drishyam-2015",
+        "release_date": "2015-05-15",
+        "status": "released"
+    },
+    {
+        "id": 110,
+        "title": "Drishyam 2",
+        "slug": "drishyam-2-2022",
+        "release_date": "2022-05-15",
+        "status": "released"
+    },
+    {
+        "id": 111,
+        "title": "Uri: The Surgical Strike",
+        "slug": "uri-the-surgical-strike-2019",
+        "release_date": "2019-05-15",
+        "status": "released"
+    },
+    {
+        "id": 112,
+        "title": "Andhadhun",
+        "slug": "andhadhun-2018",
+        "release_date": "2018-05-15",
+        "status": "released"
+    },
+    {
+        "id": 113,
+        "title": "Tumbbad",
+        "slug": "tumbbad-2018",
+        "release_date": "2018-05-15",
+        "status": "released"
+    },
+    {
+        "id": 114,
+        "title": "Kantara",
+        "slug": "kantara-2022",
+        "release_date": "2022-05-15",
+        "status": "released"
+    },
+    {
+        "id": 115,
+        "title": "Ponniyin Selvan: Part I",
+        "slug": "ponniyin-selvan-part-i-2022",
+        "release_date": "2022-05-15",
+        "status": "released"
+    },
+    {
+        "id": 116,
+        "title": "The Godfather Part II",
+        "slug": "the-godfather-part-ii-1974",
+        "release_date": "1974-05-15",
+        "status": "released"
+    },
+    {
+        "id": 117,
+        "title": "The Lord of the Rings: The Return of the King",
+        "slug": "the-lord-of-the-rings-the-return-of-the-king-2003",
+        "release_date": "2003-05-15",
+        "status": "released"
+    },
+    {
+        "id": 118,
+        "title": "The Lord of the Rings: The Two Towers",
+        "slug": "the-lord-of-the-rings-the-two-towers-2002",
+        "release_date": "2002-05-15",
+        "status": "released"
+    },
+    {
+        "id": 119,
+        "title": "The Empire Strikes Back",
+        "slug": "the-empire-strikes-back-1980",
+        "release_date": "1980-05-15",
+        "status": "released"
+    },
+    {
+        "id": 120,
+        "title": "Spider-Man: Into the Spider-Verse",
+        "slug": "spider-man-into-the-spider-verse-2018",
+        "release_date": "2018-05-15",
+        "status": "released"
+    },
+    {
+        "id": 121,
+        "title": "Batman Begins",
+        "slug": "batman-begins-2005",
+        "release_date": "2005-05-15",
+        "status": "released"
+    },
+    {
+        "id": 122,
+        "title": "Saving Private Ryan",
+        "slug": "saving-private-ryan-1998",
+        "release_date": "1998-05-15",
+        "status": "released"
+    },
+    {
+        "id": 123,
+        "title": "Deadpool & Wolverine",
+        "slug": "deadpool-and-wolverine-2024",
+        "release_date": "2024-05-15",
+        "status": "released"
+    },
+    {
+        "id": 124,
+        "title": "The Shining",
+        "slug": "the-shining-1980",
+        "release_date": "1980-05-15",
+        "status": "released"
+    },
+    {
+        "id": 125,
+        "title": "Alien",
+        "slug": "alien-1979",
+        "release_date": "1979-05-15",
+        "status": "released"
+    },
+    {
+        "id": 126,
+        "title": "Aliens",
+        "slug": "aliens-1986",
+        "release_date": "1986-05-15",
+        "status": "released"
+    },
+    {
+        "id": 127,
+        "title": "Terminator 2: Judgment Day",
+        "slug": "terminator-2-judgment-day-1991",
+        "release_date": "1991-05-15",
+        "status": "released"
+    },
+    {
+        "id": 128,
+        "title": "Casablanca",
+        "slug": "casablanca-1942",
+        "release_date": "1942-05-15",
+        "status": "released"
+    },
+    {
+        "id": 129,
+        "title": "Psycho",
+        "slug": "psycho-1960",
+        "release_date": "1960-05-15",
+        "status": "released"
+    },
+    {
+        "id": 130,
+        "title": "Rear Window",
+        "slug": "rear-window-1954",
+        "release_date": "1954-05-15",
+        "status": "released"
+    },
+    {
+        "id": 131,
+        "title": "Whiplash",
+        "slug": "whiplash-2014",
+        "release_date": "2014-05-15",
+        "status": "released"
+    },
+    {
+        "id": 132,
+        "title": "The Social Network",
+        "slug": "the-social-network-2010",
+        "release_date": "2010-05-15",
+        "status": "released"
+    },
+    {
+        "id": 133,
+        "title": "Parasite",
+        "slug": "parasite-2019",
+        "release_date": "2019-05-15",
+        "status": "released"
+    },
+    {
+        "id": 134,
+        "title": "Spirited Away",
+        "slug": "spirited-away-2001",
+        "release_date": "2001-05-15",
+        "status": "released"
+    },
+    {
+        "id": 135,
+        "title": "Severance",
+        "slug": "severance-2022",
+        "release_date": "2022-05-15",
+        "status": "released"
+    },
+    {
+        "id": 136,
+        "title": "The Bear",
+        "slug": "the-bear-2022",
+        "release_date": "2022-05-15",
+        "status": "released"
+    },
+    {
+        "id": 137,
+        "title": "Better Call Saul",
+        "slug": "better-call-saul-2015",
+        "release_date": "2015-05-15",
+        "status": "released"
+    },
+    {
+        "id": 138,
+        "title": "The Sopranos",
+        "slug": "the-sopranos-1999",
+        "release_date": "1999-05-15",
+        "status": "released"
+    },
+    {
+        "id": 139,
+        "title": "The Wire",
+        "slug": "the-wire-2002",
+        "release_date": "2002-05-15",
+        "status": "released"
+    },
+    {
+        "id": 140,
+        "title": "Fargo",
+        "slug": "fargo-1996",
+        "release_date": "1996-05-15",
+        "status": "released"
+    },
+    {
+        "id": 141,
+        "title": "Devara: Part 1",
+        "slug": "devara-part-1-2024",
+        "release_date": "2024-05-15",
+        "status": "released"
+    },
+    {
+        "id": 142,
+        "title": "Singham",
+        "slug": "singham-2011",
+        "release_date": "2011-05-15",
+        "status": "released"
+    },
+    {
+        "id": 143,
+        "title": "Singham Again",
+        "slug": "singham-again-2024",
+        "release_date": "2024-05-15",
+        "status": "released"
+    },
+    {
+        "id": 144,
+        "title": "Chandu Champion",
+        "slug": "chandu-champion-2024",
+        "release_date": "2024-05-15",
+        "status": "released"
+    },
+    {
+        "id": 145,
+        "title": "Sam Bahadur",
+        "slug": "sam-bahadur-2023",
+        "release_date": "2023-05-15",
+        "status": "released"
+    },
+    {
+        "id": 146,
+        "title": "Article 15",
+        "slug": "article-15-2019",
+        "release_date": "2019-05-15",
+        "status": "released"
+    },
+    {
+        "id": 147,
+        "title": "Badhaai Ho",
+        "slug": "badhaai-ho-2018",
+        "release_date": "2018-05-15",
+        "status": "released"
+    },
+    {
+        "id": 148,
+        "title": "Mimi",
+        "slug": "mimi-2021",
+        "release_date": "2021-05-15",
+        "status": "released"
+    },
+    {
+        "id": 149,
+        "title": "Bareilly Ki Barfi",
+        "slug": "bareilly-ki-barfi-2017",
+        "release_date": "2017-05-15",
+        "status": "released"
+    },
+    {
+        "id": 150,
+        "title": "Newton",
+        "slug": "newton-2017",
+        "release_date": "2017-05-15",
+        "status": "released"
+    },
+    {
+        "id": 151,
+        "title": "Shahid",
+        "slug": "shahid-2013",
+        "release_date": "2013-05-15",
+        "status": "released"
+    },
+    {
+        "id": 152,
+        "title": "Aligarh",
+        "slug": "aligarh-2015",
+        "release_date": "2015-05-15",
+        "status": "released"
+    },
+    {
+        "id": 153,
+        "title": "Haider",
+        "slug": "haider-2014",
+        "release_date": "2014-05-15",
+        "status": "released"
+    },
+    {
+        "id": 154,
+        "title": "Maqbool",
+        "slug": "maqbool-2003",
+        "release_date": "2003-05-15",
+        "status": "released"
+    },
+    {
+        "id": 155,
+        "title": "Omkara",
+        "slug": "omkara-2006",
+        "release_date": "2006-05-15",
+        "status": "released"
+    },
+    {
+        "id": 156,
+        "title": "The Lunchbox",
+        "slug": "the-lunchbox-2013",
+        "release_date": "2013-05-15",
+        "status": "released"
+    },
+    {
+        "id": 157,
+        "title": "Satya",
+        "slug": "satya-1998",
+        "release_date": "1998-05-15",
+        "status": "released"
+    },
+    {
+        "id": 158,
+        "title": "Company",
+        "slug": "company-2002",
+        "release_date": "2002-05-15",
+        "status": "released"
+    },
+    {
+        "id": 159,
+        "title": "Sivaji: The Boss",
+        "slug": "sivaji-the-boss-2007",
+        "release_date": "2007-05-15",
+        "status": "released"
+    },
+    {
+        "id": 160,
+        "title": "Enthiran",
+        "slug": "enthiran-2010",
+        "release_date": "2010-05-15",
+        "status": "released"
+    },
+    {
+        "id": 161,
+        "title": "Indian",
+        "slug": "indian-1996",
+        "release_date": "1996-05-15",
+        "status": "released"
+    },
+    {
+        "id": 162,
+        "title": "Kaithi",
+        "slug": "kaithi-2019",
+        "release_date": "2019-05-15",
+        "status": "released"
+    },
+    {
+        "id": 163,
+        "title": "Master",
+        "slug": "master-2021",
+        "release_date": "2021-05-15",
+        "status": "released"
+    },
+    {
+        "id": 164,
+        "title": "Asuran",
+        "slug": "asuran-2019",
+        "release_date": "2019-05-15",
+        "status": "released"
+    },
+    {
+        "id": 165,
+        "title": "Vada Chennai",
+        "slug": "vada-chennai-2018",
+        "release_date": "2018-05-15",
+        "status": "released"
+    },
+    {
+        "id": 166,
+        "title": "The Green Mile",
+        "slug": "the-green-mile-1999",
+        "release_date": "1999-05-15",
+        "status": "released"
+    },
+    {
+        "id": 167,
+        "title": "Apocalypse Now",
+        "slug": "apocalypse-now-1979",
+        "release_date": "1979-05-15",
+        "status": "released"
+    },
+    {
+        "id": 168,
+        "title": "Taxi Driver",
+        "slug": "taxi-driver-1976",
+        "release_date": "1976-05-15",
+        "status": "released"
+    },
+    {
+        "id": 169,
+        "title": "No Country for Old Men",
+        "slug": "no-country-for-old-men-2007",
+        "release_date": "2007-05-15",
+        "status": "released"
+    },
+    {
+        "id": 170,
+        "title": "The Grand Budapest Hotel",
+        "slug": "the-grand-budapest-hotel-2014",
+        "release_date": "2014-05-15",
+        "status": "released"
+    },
+    {
+        "id": 171,
+        "title": "Mad Max: Fury Road",
+        "slug": "mad-max-fury-road-2015",
+        "release_date": "2015-05-15",
+        "status": "released"
+    },
+    {
+        "id": 172,
+        "title": "The Usual Suspects",
+        "slug": "the-usual-suspects-1995",
+        "release_date": "1995-05-15",
+        "status": "released"
+    },
+    {
+        "id": 173,
+        "title": "Shutter Island",
+        "slug": "shutter-island-2010",
+        "release_date": "2010-05-15",
+        "status": "released"
+    },
+    {
+        "id": 174,
+        "title": "Mindhunter",
+        "slug": "mindhunter-2017",
+        "release_date": "2017-05-15",
+        "status": "released"
+    },
+    {
+        "id": 175,
+        "title": "Narcos",
+        "slug": "narcos-2015",
+        "release_date": "2015-05-15",
+        "status": "released"
+    },
+    {
+        "id": 176,
+        "title": "Devdas",
+        "slug": "devdas-2002",
+        "release_date": "2002-05-15",
+        "status": "released"
+    },
+    {
+        "id": 177,
+        "title": "Taare Zameen Par",
+        "slug": "taare-zameen-par-2007",
+        "release_date": "2007-05-15",
+        "status": "released"
+    },
+    {
+        "id": 178,
+        "title": "Chak De! India",
+        "slug": "chak-de-india-2007",
+        "release_date": "2007-05-15",
+        "status": "released"
+    },
+    {
+        "id": 179,
+        "title": "Ghajini",
+        "slug": "ghajini-2008",
+        "release_date": "2008-05-15",
+        "status": "released"
+    },
+    {
+        "id": 180,
+        "title": "Kahaani",
+        "slug": "kahaani-2012",
+        "release_date": "2012-05-15",
+        "status": "released"
+    },
+    {
+        "id": 181,
+        "title": "Lootera",
+        "slug": "lootera-2013",
+        "release_date": "2013-05-15",
+        "status": "released"
+    },
+    {
+        "id": 182,
+        "title": "Udta Punjab",
+        "slug": "udta-punjab-2016",
+        "release_date": "2016-05-15",
+        "status": "released"
+    },
+    {
+        "id": 183,
+        "title": "Gadar: Ek Prem Katha",
+        "slug": "gadar-ek-prem-katha-2001",
+        "release_date": "2001-05-15",
+        "status": "released"
+    },
+    {
+        "id": 184,
+        "title": "Vikram Vedha",
+        "slug": "vikram-vedha-2017",
+        "release_date": "2017-05-15",
+        "status": "released"
+    },
+    {
+        "id": 185,
+        "title": "Lucifer",
+        "slug": "lucifer-2019",
+        "release_date": "2019-05-15",
+        "status": "released"
+    },
+    {
+        "id": 186,
+        "title": "The Pianist",
+        "slug": "the-pianist-2002",
+        "release_date": "2002-05-15",
+        "status": "released"
+    },
+    {
+        "id": 187,
+        "title": "L\u00e9on: The Professional",
+        "slug": "leon-the-professional-1994",
+        "release_date": "1994-05-15",
+        "status": "released"
+    },
+    {
+        "id": 188,
+        "title": "American Psycho",
+        "slug": "american-psycho-2000",
+        "release_date": "2000-05-15",
+        "status": "released"
+    },
+    {
+        "id": 189,
+        "title": "Heat",
+        "slug": "heat-1995",
+        "release_date": "1995-05-15",
+        "status": "released"
+    },
+    {
+        "id": 190,
+        "title": "Scarface",
+        "slug": "scarface-1983",
+        "release_date": "1983-05-15",
+        "status": "released"
+    },
+    {
+        "id": 191,
+        "title": "Arrival",
+        "slug": "arrival-2016",
+        "release_date": "2016-05-15",
+        "status": "released"
+    },
+    {
+        "id": 192,
+        "title": "Eternal Sunshine of the Spotless Mind",
+        "slug": "eternal-sunshine-of-the-spotless-mind-2004",
+        "release_date": "2004-05-15",
+        "status": "released"
+    },
+    {
+        "id": 193,
+        "title": "Soorarai Pottru",
+        "slug": "soorarai-pottru-2020",
+        "release_date": "2020-05-15",
+        "status": "released"
+    },
+    {
+        "id": 194,
+        "title": "Jai Bhim",
+        "slug": "jai-bhim-2021",
+        "release_date": "2021-05-15",
+        "status": "released"
+    },
+    {
+        "id": 195,
+        "title": "Manjummel Boys",
+        "slug": "manjummel-boys-2024",
+        "release_date": "2024-05-15",
+        "status": "released"
+    },
+    {
+        "id": 196,
+        "title": "Braveheart",
+        "slug": "braveheart-1995",
+        "release_date": "1995-05-15",
+        "status": "released"
+    },
+    {
+        "id": 197,
+        "title": "The Big Lebowski",
+        "slug": "the-big-lebowski-1998",
+        "release_date": "1998-05-15",
+        "status": "released"
+    },
+    {
+        "id": 198,
+        "title": "Pan's Labyrinth",
+        "slug": "pans-labyrinth-2006",
+        "release_date": "2006-05-15",
+        "status": "released"
+    },
+    {
+        "id": 199,
+        "title": "City of God",
+        "slug": "city-of-god-2002",
+        "release_date": "2002-05-15",
+        "status": "released"
+    },
+    {
+        "id": 200,
+        "title": "Memories of Murder",
+        "slug": "memories-of-murder-2003",
+        "release_date": "2003-05-15",
+        "status": "released"
+    },
+    {
+        "id": 201,
+        "title": "Nayakan",
+        "slug": "nayakan-1987",
+        "release_date": "1987-05-15",
+        "status": "released"
+    },
+    {
+        "id": 202,
+        "title": "Anbe Sivam",
+        "slug": "anbe-sivam-2003",
+        "release_date": "2003-05-15",
+        "status": "released"
+    },
+    {
+        "id": 203,
+        "title": "Sarpatta Parambarai",
+        "slug": "sarpatta-parambarai-2021",
+        "release_date": "2021-05-15",
+        "status": "released"
+    },
+    {
+        "id": 204,
+        "title": "Super Deluxe",
+        "slug": "super-deluxe-2019",
+        "release_date": "2019-05-15",
+        "status": "released"
+    },
+    {
+        "id": 205,
+        "title": "Aavesham",
+        "slug": "aavesham-2024",
+        "release_date": "2024-05-15",
+        "status": "released"
+    },
+    {
+        "id": 206,
+        "title": "Oldboy",
+        "slug": "oldboy-2003",
+        "release_date": "2003-05-15",
+        "status": "released"
+    },
+    {
+        "id": 207,
+        "title": "Trainspotting",
+        "slug": "trainspotting-1996",
+        "release_date": "1996-05-15",
+        "status": "released"
+    },
+    {
+        "id": 208,
+        "title": "Requiem for a Dream",
+        "slug": "requiem-for-a-dream-2000",
+        "release_date": "2000-05-15",
+        "status": "released"
+    },
+    {
+        "id": 209,
+        "title": "Am\u00e9lie",
+        "slug": "amelie-2001",
+        "release_date": "2001-05-15",
+        "status": "released"
+    },
+    {
+        "id": 210,
+        "title": "Full Metal Jacket",
+        "slug": "full-metal-jacket-1987",
+        "release_date": "1987-05-15",
+        "status": "released"
+    },
+    {
+        "id": 211,
+        "title": "Kumbalangi Nights",
+        "slug": "kumbalangi-nights-2019",
+        "release_date": "2019-05-15",
+        "status": "released"
+    },
+    {
+        "id": 212,
+        "title": "Iruvar",
+        "slug": "iruvar-1997",
+        "release_date": "1997-05-15",
+        "status": "released"
+    },
+    {
+        "id": 213,
+        "title": "Premalu",
+        "slug": "premalu-2024",
+        "release_date": "2024-05-15",
+        "status": "released"
+    },
+    {
+        "id": 214,
+        "title": "Brahmayugam",
+        "slug": "brahmayugam-2024",
+        "release_date": "2024-05-15",
+        "status": "released"
+    },
+    {
+        "id": 215,
+        "title": "Karnan",
+        "slug": "karnan-2021",
+        "release_date": "2021-05-15",
+        "status": "released"
+    },
+    {
+        "id": 216,
+        "title": "12 Angry Men",
+        "slug": "12-angry-men-1957",
+        "release_date": "1957-05-15",
+        "status": "released"
+    },
+    {
+        "id": 217,
+        "title": "Blade Runner",
+        "slug": "blade-runner-1982",
+        "release_date": "1982-05-15",
+        "status": "released"
+    },
+    {
+        "id": 218,
+        "title": "There Will Be Blood",
+        "slug": "there-will-be-blood-2007",
+        "release_date": "2007-05-15",
+        "status": "released"
+    },
+    {
+        "id": 219,
+        "title": "Kill Bill: Vol. 1",
+        "slug": "kill-bill-vol-1-2003",
+        "release_date": "2003-05-15",
+        "status": "released"
+    },
+    {
+        "id": 220,
+        "title": "1917",
+        "slug": "1917-2019",
+        "release_date": "2019-05-15",
+        "status": "released"
+    },
+    {
+        "id": 221,
+        "title": "Dil Chahta Hai",
+        "slug": "dil-chahta-hai-2001",
+        "release_date": "2001-05-15",
+        "status": "released"
+    },
+    {
+        "id": 222,
+        "title": "Rangasthalam",
+        "slug": "rangasthalam-2018",
+        "release_date": "2018-05-15",
+        "status": "released"
+    },
+    {
+        "id": 223,
+        "title": "Maharaja",
+        "slug": "maharaja-2024",
+        "release_date": "2024-05-15",
+        "status": "released"
+    },
+    {
+        "id": 224,
+        "title": "Chithha",
+        "slug": "chithha-2023",
+        "release_date": "2023-05-15",
+        "status": "released"
+    },
+    {
+        "id": 225,
+        "title": "Thani Oruvan",
+        "slug": "thani-oruvan-2015",
+        "release_date": "2015-05-15",
+        "status": "released"
+    },
+    {
+        "id": 241,
+        "title": "Ramayana: Part 1",
+        "slug": "ramayana-part-1-2026",
+        "release_date": "2026-11-06",
+        "status": "post_production"
+    },
+    {
+        "id": 242,
+        "title": "Wildwood",
+        "slug": "wildwood-2026",
+        "release_date": "2026-11-13",
+        "status": "post_production"
+    },
+    {
+        "id": 243,
+        "title": "The Hunger Games: Sunrise on the Reaping",
+        "slug": "the-hunger-games-sunrise-on-the-reaping-2026",
+        "release_date": "2026-11-20",
+        "status": "post_production"
+    },
+    {
+        "id": 244,
+        "title": "I Play Rocky",
+        "slug": "i-play-rocky-2026",
+        "release_date": "2026-11-20",
+        "status": "post_production"
+    },
+    {
+        "id": 245,
+        "title": "Violent Night 2",
+        "slug": "violent-night-2-2026",
+        "release_date": "2026-12-04",
+        "status": "post_production"
+    },
+    {
+        "id": 246,
+        "title": "Avengers: Doomsday",
+        "slug": "avengers-doomsday-2026",
+        "release_date": "2026-12-18",
+        "status": "post_production"
+    },
+    {
+        "id": 247,
+        "title": "Dune: Part Three",
+        "slug": "dune-part-three-2026",
+        "release_date": "2026-12-18",
+        "status": "post_production"
+    },
+    {
+        "id": 248,
+        "title": "The Angry Birds Movie 3",
+        "slug": "the-angry-birds-movie-3-2026",
+        "release_date": "2026-12-23",
+        "status": "post_production"
+    },
+    {
+        "id": 249,
+        "title": "Jumanji: Open World",
+        "slug": "jumanji-open-world-2026",
+        "release_date": "2026-12-25",
+        "status": "post_production"
+    }
+]

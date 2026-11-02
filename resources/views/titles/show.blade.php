@@ -1174,35 +1174,127 @@
         </section>
     @endif
 
-    <!-- 8. Similar / Related Recommendations -->
-    @if($similarTitles->isNotEmpty())
-        <section class="py-16 bg-[#f8fafc]">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-end justify-between mb-8">
+    <!-- 8. Similar Titles & Curated Recommendations Section -->
+    @if(!empty($similarTitles) && $similarTitles->isNotEmpty())
+        <section id="similar-titles" class="py-16 bg-[#010629] text-white border-t border-[#0d163f] relative overflow-hidden scroll-mt-24">
+            <!-- Subtle background ambient glows -->
+            <div class="absolute -top-24 -left-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <!-- Header with Title, Badge & Navigation Link -->
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 pb-6 border-b border-white/10">
                     <div>
-                        <span class="text-[11px] font-bold uppercase tracking-widest text-slate-400 block mb-1">Explore More</span>
-                        <h2 class="text-2xl font-extrabold text-slate-950">You Might Also Like</h2>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[11px] font-bold tracking-widest uppercase mb-2 shadow-xs">
+                            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                            <span>Handpicked For You</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-3">
+                            <span>Similar {{ $isSeries ? 'Series & Shows' : 'Movies' }} Like {{ $title->title }}</span>
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
+                            Discover titles sharing thrilling themes, visionary filmmakers, celebrated stars, and matching genres with <strong class="text-slate-200">{{ $title->title }}</strong>.
+                        </p>
                     </div>
+
+                    <a href="{{ route('explore', ['type' => $title->type]) }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-amber-400 border border-white/10 hover:border-amber-400/40 transition-all active:scale-95 shrink-0 self-start md:self-auto group">
+                        <span>Browse All {{ $formatLabel }}s</span>
+                        <svg class="w-4 h-4 transform group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                        </svg>
+                    </a>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-5">
+                <!-- 6-Card Responsive Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5">
                     @foreach($similarTitles as $similar)
-                        <a href="{{ route('title.show', $similar->slug) }}" class="rounded-2xl overflow-hidden bg-white border border-slate-200/80 shadow-sm hover:shadow-xl transition-all card-shadow-hover group">
-                            <div class="aspect-[3/4] w-full bg-slate-900 overflow-hidden relative">
+                        @php
+                            $similarPoster = $similar->poster_url ?: asset('images/movie_the_last_horizon.jpg');
+                            $simRating = (float) $similar->rating;
+                            $primaryGenre = $similar->genres->first();
+                        @endphp
+                        <a 
+                            href="{{ route('title.show', $similar->slug) }}" 
+                            class="group flex flex-col rounded-2xl bg-gradient-to-b from-[#0a1445]/90 to-[#020721]/90 border border-white/10 hover:border-amber-400/50 shadow-lg hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 transform hover:-translate-y-1.5 overflow-hidden focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+                        >
+                            <!-- Poster Container with Aspect Ratio 2/3 -->
+                            <div class="aspect-[2/3] w-full bg-slate-950 overflow-hidden relative">
                                 <img 
-                                    src="{{ $similar->poster_url ?: asset('images/movie_the_last_horizon.jpg') }}" 
-                                    alt="{{ $similar->title }}" 
-                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    src="{{ $similarPoster }}" 
+                                    alt="{{ $similar->title }} ({{ $similar->release_year ?? 'Cinema' }}) poster" 
+                                    class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500 ease-out"
                                     loading="lazy"
                                 >
+                                
+                                <!-- Dark Vignette Gradient -->
+                                <div class="absolute inset-0 bg-gradient-to-t from-[#020721] via-transparent to-black/40 opacity-80 group-hover:opacity-60 transition-opacity"></div>
+
+                                <!-- Top Badges: Content Rating / Format & Star Rating -->
+                                <div class="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-1 z-10 pointer-events-none">
+                                    @if($similar->content_rating)
+                                        <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-black/60 backdrop-blur-md text-slate-200 border border-white/15">
+                                            {{ $similar->content_rating }}
+                                        </span>
+                                    @else
+                                        <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-black/60 backdrop-blur-md text-slate-300 border border-white/15">
+                                            {{ $similar->type === 'tv_series' ? 'TV' : 'Movie' }}
+                                        </span>
+                                    @endif
+
+                                    @if($simRating > 0)
+                                        <span class="px-2 py-0.5 rounded-md text-[11px] font-black bg-amber-500/90 text-slate-950 backdrop-blur-md flex items-center gap-1 shadow-sm">
+                                            <span>★</span>
+                                            <span>{{ number_format($simRating, 1) }}</span>
+                                        </span>
+                                    @endif
+                                </div>
+
+                                <!-- Subtle Hover Action Overlay -->
+                                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-slate-950/40 backdrop-blur-xs">
+                                    <span class="px-3 py-1.5 rounded-xl bg-amber-500 text-slate-950 text-xs font-black shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+                                        View Details
+                                    </span>
+                                </div>
                             </div>
-                            <div class="p-3.5">
-                                <h4 class="text-xs font-bold text-slate-900 group-hover:text-amber-600 transition-colors truncate mb-1">
-                                    {{ $similar->title }}
-                                </h4>
-                                <div class="flex items-center justify-between text-[11px] text-slate-400">
-                                    <span>{{ $similar->release_year ?? '2025' }}</span>
-                                    <span class="text-amber-500 font-bold">★ {{ number_format((float) $similar->rating, 1) }}</span>
+
+                            <!-- Card Details Footer -->
+                            <div class="p-3.5 flex flex-col flex-1 justify-between gap-2">
+                                <div>
+                                    <!-- Connection Badge / Match Reason -->
+                                    @if(!empty($similar->match_reason))
+                                        <div class="mb-1.5">
+                                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-300/90 bg-amber-400/10 border border-amber-400/20 px-2 py-0.5 rounded-md truncate max-w-full">
+                                                <svg class="w-2.5 h-2.5 fill-current shrink-0" viewBox="0 0 24 24">
+                                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                                </svg>
+                                                <span class="truncate">{{ $similar->match_reason }}</span>
+                                            </span>
+                                        </div>
+                                    @endif
+
+                                    <!-- Title Name -->
+                                    <h3 class="text-xs sm:text-sm font-bold text-white group-hover:text-amber-400 transition-colors line-clamp-1 leading-snug" title="{{ $similar->title }}">
+                                        {{ $similar->title }}
+                                    </h3>
+                                </div>
+
+                                <!-- Metadata Row: Year, Duration / Country, Genre -->
+                                <div class="pt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400">
+                                    <div class="flex items-center gap-1.5 truncate">
+                                        <span>{{ $similar->release_year ?? 'Cinema' }}</span>
+                                        @if($primaryGenre)
+                                            <span>•</span>
+                                            <span class="text-slate-300 truncate">{{ $primaryGenre->name }}</span>
+                                        @endif
+                                    </div>
+
+                                    @if(!empty($similar->original_language))
+                                        <span class="uppercase text-[10px] px-1.5 py-0.2 rounded bg-white/5 text-slate-400 font-semibold shrink-0">
+                                            {{ substr($similar->original_language, 0, 3) }}
+                                        </span>
+                                    @endif
                                 </div>
                             </div>
                         </a>

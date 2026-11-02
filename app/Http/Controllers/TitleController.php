@@ -17,7 +17,7 @@ class TitleController extends Controller
      */
     public function show(string $slug, StructuredDataService $structuredDataService)
     {
-        $cacheKey = "title_profile_v5_{$slug}";
+        $cacheKey = "title_profile_v6_{$slug}";
 
         $cachedData = Cache::remember($cacheKey, now()->addHours(24), function () use ($slug, $structuredDataService) {
             $title = Title::query()
@@ -59,23 +59,8 @@ class TitleController extends Controller
                 }
             }
 
-            // Similar / Recommended Titles
-            $genreIds = $title->genres->pluck('id');
-            $similarTitles = Title::query()
-                ->where('id', '!=', $title->id)
-                ->where(function ($query) use ($genreIds, $title) {
-                    if ($genreIds->isNotEmpty()) {
-                        $query
-                            ->whereHas('genres', fn($q) => $q->whereIn('genres.id', $genreIds))
-                            ->orWhere('type', $title->type);
-                    } else {
-                        $query->where('type', $title->type);
-                    }
-                })
-                ->select(['id', 'title', 'slug', 'type', 'poster_path', 'rating', 'release_date', 'origin_country', 'budget', 'box_office'])
-                ->latest('rating')
-                ->take(4)
-                ->get();
+            // Intelligently Ranked Similar / Recommended Titles (shared genres, directors, cast, language, ratings)
+            $similarTitles = $this->getSimilarTitles($title, 6);
 
             // Generate Programmatic FAQs
             $faqs = $this->generateTitleFaqs($title, $directors, $writers, $cast);
@@ -386,5 +371,119 @@ class TitleController extends Controller
         }
 
         return $faqs;
+    }
+
+    /**
+     * Get intelligently ranked similar titles based on shared genres, directors, stars, language, and theme.
+     */
+    protected function getSimilarTitles(Title $title, int $limit = 6)
+    {
+        $genreIds = $title->genres->pluck('id')->filter()->toArray();
+        $directorIds = $title->credits
+            ->filter(fn($c) => $c->department === 'Directing' || (is_string($c->job) && stripos($c->job, 'director') !== false))
+            ->pluck('person_id')->filter()->toArray();
+        $keyActorIds = $title->credits
+            ->where('department', 'Acting')
+            ->take(3)
+            ->pluck('person_id')->filter()->toArray();
+
+        $candidates = Title::query()
+            ->where('id', '!=', $title->id)
+            ->where('is_active', true)
+            ->where(function ($q) use ($genreIds, $directorIds, $keyActorIds, $title) {
+                $hasCondition = false;
+                if (!empty($genreIds)) {
+                    $q->whereHas('genres', fn($gq) => $gq->whereIn('genres.id', $genreIds));
+                    $hasCondition = true;
+                }
+                if (!empty($directorIds) || !empty($keyActorIds)) {
+                    $peopleIds = array_merge($directorIds, $keyActorIds);
+                    if ($hasCondition) {
+                        $q->orWhereHas('credits', fn($cq) => $cq->whereIn('person_id', $peopleIds));
+                    } else {
+                        $q->whereHas('credits', fn($cq) => $cq->whereIn('person_id', $peopleIds));
+                        $hasCondition = true;
+                    }
+                }
+                if (!$hasCondition) {
+                    $q->where('type', $title->type)
+                      ->where('original_language', $title->original_language);
+                }
+            })
+            ->with([
+                'genres:id,name,slug',
+                'credits' => fn($q) => $q->where('is_featured', true)->with('person:id,name,slug')->take(3)
+            ])
+            ->select(['id', 'title', 'slug', 'type', 'poster_path', 'rating', 'release_date', 'original_language', 'origin_country', 'budget', 'box_office', 'tagline', 'content_rating', 'runtime_minutes'])
+            ->get();
+
+        if ($candidates->isEmpty()) {
+            return Title::query()
+                ->where('id', '!=', $title->id)
+                ->where('is_active', true)
+                ->where('type', $title->type)
+                ->with('genres:id,name,slug')
+                ->latest('rating')
+                ->take($limit)
+                ->get();
+        }
+
+        $directorPerson = $title->credits->first(fn($c) => $c->department === 'Directing')?->person;
+        $leadActorPerson = $title->credits->first(fn($c) => $c->department === 'Acting')?->person;
+
+        return $candidates->map(function ($candidate) use ($title, $genreIds, $directorIds, $keyActorIds, $directorPerson, $leadActorPerson) {
+            $score = 0;
+            $matchReasons = [];
+
+            // 1. Same Director (10 pts)
+            $candPersonIds = $candidate->credits->pluck('person_id')->toArray();
+            if (!empty($directorIds) && !empty(array_intersect($directorIds, $candPersonIds))) {
+                $score += 10;
+                if ($directorPerson) {
+                    $matchReasons[] = "Directed by {$directorPerson->name}";
+                }
+            }
+
+            // 2. Same Lead Star (7 pts)
+            if (!empty($keyActorIds) && !empty(array_intersect($keyActorIds, $candPersonIds))) {
+                $score += 7;
+                if ($leadActorPerson) {
+                    $matchReasons[] = "Stars {$leadActorPerson->name}";
+                }
+            }
+
+            // 3. Shared Genres (4 pts each)
+            $candGenreIds = $candidate->genres->pluck('id')->toArray();
+            $sharedGenres = array_intersect($genreIds, $candGenreIds);
+            $sharedCount = count($sharedGenres);
+            $score += $sharedCount * 4;
+            if ($sharedCount > 0 && empty($matchReasons)) {
+                $sharedNames = $candidate->genres->whereIn('id', $sharedGenres)->pluck('name')->take(2)->implode(' & ');
+                $matchReasons[] = "Genre: {$sharedNames}";
+            }
+
+            // 4. Same Language & Country
+            if (!empty($title->original_language) && $candidate->original_language === $title->original_language) {
+                $score += 3;
+            }
+            if (!empty($title->origin_country) && $candidate->origin_country === $title->origin_country) {
+                $score += 1;
+            }
+
+            // 5. Same Type
+            if ($candidate->type === $title->type) {
+                $score += 2;
+            }
+
+            // 6. Rating boost
+            $score += ((float) $candidate->rating) * 0.5;
+
+            $candidate->similarity_score = $score;
+            $candidate->match_reason = !empty($matchReasons) ? $matchReasons[0] : ($candidate->genres->first()?->name ? $candidate->genres->first()->name . ' Movie' : 'Recommended');
+            return $candidate;
+        })
+        ->sortByDesc('similarity_score')
+        ->take($limit)
+        ->values();
     }
 }

@@ -4,10 +4,10 @@ namespace App\Filament\Resources\Titles\Schemas;
 
 use App\Enums\ReleaseStatus;
 use App\Enums\TitleType;
+use App\Filament\Forms\Components\QuillEditor;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
@@ -63,10 +63,15 @@ class TitleForm
                                             ->placeholder('e.g. Welcome to the day after tomorrow.')
                                             ->maxLength(500),
 
-                                        Textarea::make('overview')
-                                            ->label('Synopsis / Storyline')
-                                            ->rows(6)
-                                            ->placeholder('Full plot synopsis...'),
+                                        QuillEditor::make('overview')
+                                            ->label('Synopsis / Storyline (Quill RichText)')
+                                            ->placeholder('Full plot synopsis with formatting and links...')
+                                            ->minHeight(240),
+
+                                        QuillEditor::make('description')
+                                            ->label('Extended Storyline & Character Analysis (Quill RichText)')
+                                            ->placeholder('Detailed narrative breakdown, character arcs, and links to actors or related titles...')
+                                            ->minHeight(280),
 
                                         Grid::make(4)
                                             ->schema([

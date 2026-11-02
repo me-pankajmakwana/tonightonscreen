@@ -3,11 +3,11 @@
 namespace App\Filament\Resources\People\Schemas;
 
 use App\Enums\Department;
+use App\Filament\Forms\Components\QuillEditor;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
@@ -25,9 +25,10 @@ class PersonForm
                 Group::make()
                     ->schema([
                         Section::make('General Information')
-                            ->description('Name, stage name, primary industry department')
+                            ->description('Official name, popular stage name, primary industry department')
                             ->schema([
                                 TextInput::make('name')
+                                    ->label('Display / Working Name')
                                     ->required()
                                     ->maxLength(255)
                                     ->live(onBlur: true)
@@ -37,10 +38,15 @@ class PersonForm
                                         }
                                     }),
 
-                                TextInput::make('stage_name')
-                                    ->label('Stage / Professional Name')
+                                TextInput::make('full_name')
+                                    ->label('Official / Birth Name')
                                     ->maxLength(255)
-                                    ->placeholder('e.g. The Rock, Lady Gaga (if applicable)'),
+                                    ->placeholder('e.g. Robert John Downey Jr.'),
+
+                                TextInput::make('stage_name')
+                                    ->label('Stage / Popular Moniker')
+                                    ->maxLength(255)
+                                    ->placeholder('e.g. RDJ, The Rock, SRK (if applicable)'),
 
                                 TextInput::make('slug')
                                     ->required()
@@ -69,8 +75,39 @@ class PersonForm
                             ])
                             ->columns(2),
 
-                        Section::make('Lifespan & Origins')
+                        Section::make('Origins, Physicality & Personal Dossier')
+                            ->description('Nationality, residence, birth facts, height, and academic background')
                             ->schema([
+                                Grid::make(3)
+                                    ->schema([
+                                        TextInput::make('nationality')
+                                            ->label('Nationality / Citizenship')
+                                            ->placeholder('e.g. American, British, Indian'),
+
+                                        TextInput::make('birth_place')
+                                            ->label('Place of Birth')
+                                            ->placeholder('e.g. London, England, UK'),
+
+                                        TextInput::make('hometown')
+                                            ->label('Native Hometown')
+                                            ->placeholder('e.g. Greenwich Village, New York City'),
+                                    ]),
+
+                                Grid::make(3)
+                                    ->schema([
+                                        TextInput::make('residence')
+                                            ->label('Current Residence')
+                                            ->placeholder('e.g. Malibu, California, USA'),
+
+                                        TextInput::make('height')
+                                            ->label('Height (Stature)')
+                                            ->placeholder('e.g. 5 ft 9 in (175 cm)'),
+
+                                        TextInput::make('zodiac_sign')
+                                            ->label('Zodiac Sign')
+                                            ->placeholder('e.g. Gemini, Aries, Leo'),
+                                    ]),
+
                                 Grid::make(2)
                                     ->schema([
                                         DatePicker::make('birth_date')
@@ -82,21 +119,51 @@ class PersonForm
                                             ->native(false),
                                     ]),
 
-                                TextInput::make('birth_place')
-                                    ->label('Place of Birth')
-                                    ->placeholder('e.g. London, England, UK')
-                                    ->maxLength(255),
+                                Grid::make(2)
+                                    ->schema([
+                                        TextInput::make('education')
+                                            ->label('Alma Mater / Schools & Universities')
+                                            ->placeholder('e.g. University College Cork'),
+
+                                        TextInput::make('qualification')
+                                            ->label('Highest Degree / Qualification')
+                                            ->placeholder('e.g. Classical Dramatic Arts Degree'),
+                                    ]),
+
+                                Grid::make(2)
+                                    ->schema([
+                                        TextInput::make('languages')
+                                            ->label('Languages Spoken (comma separated)')
+                                            ->placeholder('e.g. English, French, Irish'),
+
+                                        TextInput::make('religion')
+                                            ->label('Faith / Worldview')
+                                            ->placeholder('e.g. Christian, Hindu, Buddhist, Private'),
+                                    ]),
+
+                                Grid::make(2)
+                                    ->schema([
+                                        TextInput::make('hobbies')
+                                            ->label('Hobbies & Interests')
+                                            ->placeholder('e.g. Cooking, Gardening, Music'),
+
+                                        TextInput::make('other_talents')
+                                            ->label('Auxiliary Creative Talents')
+                                            ->placeholder('e.g. Guitar, Singing, Martial Arts, Directing'),
+                                    ]),
 
                                 TextInput::make('website')
                                     ->url()
                                     ->placeholder('https://...'),
                             ]),
 
-                        Section::make('Biography')
+                        Section::make('Biography & Career Narrative')
+                            ->description('Formatted rich-text biography with hyperlink support for titles, people, and accolades')
                             ->schema([
-                                Textarea::make('biography')
-                                    ->rows(6)
-                                    ->placeholder('Full biography and career highlights...'),
+                                QuillEditor::make('biography')
+                                    ->label('Biography & Career Highlights (Quill RichText Editor)')
+                                    ->placeholder('Write in-depth formatted biography, character details, and hyperlinks...')
+                                    ->minHeight(280),
 
                                 KeyValue::make('social_links')
                                     ->keyLabel('Platform (e.g. instagram, twitter, imdb)')

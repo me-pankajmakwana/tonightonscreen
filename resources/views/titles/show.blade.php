@@ -204,10 +204,10 @@
 
                     <!-- Overview / Plot — itemprop for semantic entity signal -->
                     <div class="space-y-2">
-                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-400">Storyline</h2>
-                        <p itemprop="description" class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-3xl storyline-text">
-                            {{ $title->overview ?: 'Plot synopsis is currently in preparation.' }}
-                        </p>
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-[#FFA500]">Storyline & Synopsis</h2>
+                        <div itemprop="description" class="text-sm sm:text-base text-slate-200 leading-relaxed max-w-3xl storyline-text rich-content">
+                            {!! $title->overview ?: '<p>Plot synopsis is currently in preparation.</p>' !!}
+                        </div>
                     </div>
 
                     <!-- Key Crew Quick Strip -->
@@ -494,6 +494,23 @@
                     </div>
                 @endif
 
+            </div>
+        </section>
+    @endif
+
+    <!-- Extended Storyline & Detailed Analysis (Quill RichText Content & Internal Links) -->
+    @if(!empty($title->description))
+        <section id="extended-storyline" class="py-12 bg-[#020938] text-white border-b border-[#0d163f] relative overflow-hidden scroll-mt-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="mb-6">
+                    <span class="text-[11px] font-bold uppercase tracking-widest text-[#FFA500] block mb-1">Extended Narrative & Critical Analysis</span>
+                    <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                        {{ $title->title }}: In-Depth Storyline, Characters & Themes
+                    </h2>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8 backdrop-blur-sm rich-content text-slate-200 text-sm sm:text-base leading-relaxed">
+                    {!! $title->description !!}
+                </div>
             </div>
         </section>
     @endif

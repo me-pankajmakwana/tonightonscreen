@@ -347,12 +347,12 @@
                         </div>
                     </div>
 
-                    <!-- Biography Narrative -->
-                    <div id="bio" class="space-y-2.5 scroll-mt-8">
-                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-400">{{ $person->name }} Biography & Career Overview</h2>
-                        <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-3xl">
-                            {{ $person->biography ?: $person->name . ' is an accomplished artist in the global entertainment industry with distinguished contributions across multiple premier titles.' }}
-                        </p>
+                    <!-- Biography Narrative (Formatted with Quill RichText and Links) -->
+                    <div id="bio" class="space-y-3 scroll-mt-8">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-[#FFA500]">{{ $person->name }} Biography & Career Overview</h2>
+                        <div class="text-sm sm:text-base text-slate-200 leading-relaxed max-w-3xl rich-content">
+                            {!! $person->biography ?: '<p>' . e($person->name) . ' is an accomplished artist in the global entertainment industry with distinguished contributions across multiple premier titles.</p>' !!}
+                        </div>
                     </div>
 
                     <!-- "Known For" Spotlight Titles -->

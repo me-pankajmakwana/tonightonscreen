@@ -22,6 +22,11 @@
         @if(!empty($faqSchema))
             <x-seo.json-ld :data="$faqSchema" />
         @endif
+
+        <!-- Schema.org HowTo — "how to watch {movie}" / "how to stream {movie}" featured snippet -->
+        @if(!empty($watchGuideSchema))
+            <x-seo.json-ld :data="$watchGuideSchema" />
+        @endif
     @endpush
 
     <!-- 1. Hero & Backdrop Section -->
@@ -197,10 +202,10 @@
                         @endforeach
                     </div>
 
-                    <!-- Overview / Plot -->
+                    <!-- Overview / Plot — itemprop for semantic entity signal -->
                     <div class="space-y-2">
                         <h2 class="text-xs font-bold uppercase tracking-widest text-slate-400">Storyline</h2>
-                        <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-3xl">
+                        <p itemprop="description" class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-3xl storyline-text">
                             {{ $title->overview ?: 'Plot synopsis is currently in preparation.' }}
                         </p>
                     </div>
@@ -213,7 +218,7 @@
                                 <div class="text-white font-bold flex flex-wrap gap-1">
                                     @foreach($directors as $dir)
                                         @if($dir->person && $dir->person->slug)
-                                            <a href="{{ route('person.show', $dir->person->slug) }}" class="hover:text-amber-400 transition-colors underline decoration-white/30 underline-offset-2">
+                                            <a href="{{ route('person.show', $dir->person->slug) }}" rel="author" class="hover:text-amber-400 transition-colors underline decoration-white/30 underline-offset-2">
                                                 {{ $dir->person->name }}
                                             </a>{{ !$loop->last ? ',' : '' }}
                                         @elseif($dir->person)

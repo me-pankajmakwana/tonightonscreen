@@ -264,6 +264,13 @@ class PersonController extends Controller
                 "{$person->name} achievements",
                 "{$person->name} total movies count",
                 "{$person->name} hit movies",
+                // New: career history, ethnicity, breakthrough patterns
+                "{$person->name} career history",
+                "{$person->name} acting career",
+                "{$person->name} first hit movie",
+                "{$person->name} breakthrough role",
+                "{$person->name} ethnicity",
+                "{$person->name} background",
             ], $roleKeywords);
 
             $seoKeywords = implode(', ', array_unique($kwList));
@@ -347,6 +354,15 @@ class PersonController extends Controller
                 'question' => "What is {$person->name}'s age, date of birth, and birthplace / native place?",
                 'answer' => "{$person->name} was born in {$placeText}{$dateText}{$ageText}. Fans searching for {$person->name}'s native place and origin can trace their beginnings to {$placeText}, which formed the foundation of their career spanning {$stats['careerSpan']}.",
             ];
+
+            // Q2b. Ethnicity & Cultural Background ("{person} ethnicity", "{person} ethnicity and race", "{person} background")
+            $ethnicOrigin = $person->isIndian() ? 'South Asian / Indian cinema' : 'international cinema';
+            $faqs[] = [
+                'question' => "What is {$person->name}'s ethnicity and cultural background?",
+                'answer'   => "{$person->name} was born in {$placeText} and is associated with {$ethnicOrigin}. " .
+                              "Their career spans {$stats['careerSpan']} with credits across {$stats['totalMoviesCount']} movies and {$stats['totalSeriesCount']} TV shows, " .
+                              "reflecting a rich cross-cultural body of work cataloged on TonightOnScreen.",
+            ];
         }
 
         // Q3: Debut Movie / First Movie (Cluster B/C/D: debut movie, first movie, debut)
@@ -357,6 +373,21 @@ class PersonController extends Controller
                 'question' => "What was {$person->name}'s debut movie (first movie)?",
                 'answer' => "{$person->name}'s official debut movie (first cataloged project) is {$stats['debutTitle']->title}, released{$yearStr}{$debutRoleText}. This project launched their career timeline in the film industry.",
             ];
+
+            // Q3b. First Hit Movie / Breakthrough Role ("{person} first hit movie", "{person} breakthrough role")
+            $firstHit = $stats['hitMovies']->sortBy('release_date')->first();
+            if ($firstHit && $firstHit->id !== $stats['debutTitle']->id) {
+                $hitYear       = $firstHit->release_date?->format('Y');
+                $hitRating     = number_format((float) $firstHit->rating, 1);
+                $faqs[] = [
+                    'question' => "What was {$person->name}'s first hit movie and breakthrough role?",
+                    'answer'   => "{$person->name}'s first major commercial and critical hit is {$firstHit->title}" .
+                                  ($hitYear ? " ({$hitYear})" : '') .
+                                  ", rated {$hitRating}/10 on TonightOnScreen. " .
+                                  "This {$primaryRole} role established {$person->name} as a prominent name in the industry, " .
+                                  "paving the way for their celebrated career spanning {$stats['careerSpan']}.",
+                ];
+            }
         }
 
         // Q4: Achievements, Awards & Hit Movies (Cluster B: achievements, awards, hit movies)
@@ -380,6 +411,21 @@ class PersonController extends Controller
             'question' => "How many total movies and TV shows has {$person->name} done? ({$person->name} Total Movies Count)",
             'answer' => "{$person->name} has worked on {$stats['totalCredits']} total cataloged titles on TonightOnScreen spanning {$stats['careerSpan']}, featuring {$stats['totalMoviesCount']} feature movies and {$stats['totalSeriesCount']} TV shows/series{$breakdownStr}. Their most frequent genre is {$stats['topGenre']}.",
         ];
+
+        // Q5b. Career History Narrative ("{person} acting career", "{person} career history", "{person} acting career history")
+        if ($stats['totalCredits'] > 0) {
+            $debutPart  = $stats['debutTitle'] ? "Their career began with {$stats['debutTitle']->title}" : 'Their career commenced';
+            $peakPart   = $stats['highestRatedTitle']
+                ? " and includes acclaimed work in {$stats['highestRatedTitle']->title} (" . number_format((float) $stats['highestRatedTitle']->rating, 1) . "/10)"
+                : '';
+            $faqs[] = [
+                'question' => "What is {$person->name}'s acting career history and timeline?",
+                'answer'   => "{$person->name}'s career as a {$primaryRole} spans {$stats['careerSpan']}, " .
+                              "with {$stats['totalCredits']} credited titles across {$stats['totalMoviesCount']} movies and {$stats['totalSeriesCount']} TV shows. " .
+                              "{$debutPart}{$peakPart}. " .
+                              "The complete interactive career timeline, filterable by decade and genre, is available on TonightOnScreen.",
+            ];
+        }
 
         // Q6: Movies List & Complete Filmography (Cluster B/C/D: {person} movies, filmography)
         $faqs[] = [

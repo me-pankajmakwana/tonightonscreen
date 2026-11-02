@@ -17,7 +17,7 @@ class TitleController extends Controller
      */
     public function show(string $slug, StructuredDataService $structuredDataService)
     {
-        $cacheKey = "title_profile_v4_{$slug}";
+        $cacheKey = "title_profile_v5_{$slug}";
 
         $cachedData = Cache::remember($cacheKey, now()->addHours(24), function () use ($slug, $structuredDataService) {
             $title = Title::query()
@@ -36,23 +36,20 @@ class TitleController extends Controller
             // Extract Cast and Crew
             $credits = $title->credits;
             $cast = $credits->where('department', 'Acting')->values();
-            $directors = $credits->filter(fn($c) => 
-                $c->department === 'Directing' || 
+            $directors = $credits->filter(fn($c) =>
+                $c->department === 'Directing' ||
                 ($c->department instanceof \App\Enums\Department && $c->department === \App\Enums\Department::DIRECTING) ||
-                (is_string($c->job) && Str::contains(strtolower($c->job), 'director'))
-            )->values();
+                (is_string($c->job) && Str::contains(strtolower($c->job), 'director')))->values();
 
-            $writers = $credits->filter(fn($c) => 
-                $c->department === 'Writing' || 
+            $writers = $credits->filter(fn($c) =>
+                $c->department === 'Writing' ||
                 ($c->department instanceof \App\Enums\Department && $c->department === \App\Enums\Department::WRITING) ||
-                (is_string($c->job) && Str::contains(strtolower($c->job), ['writer', 'screenplay', 'creator']))
-            )->values();
+                (is_string($c->job) && Str::contains(strtolower($c->job), ['writer', 'screenplay', 'creator'])))->values();
 
-            $producers = $credits->filter(fn($c) => 
-                $c->department === 'Production' || 
+            $producers = $credits->filter(fn($c) =>
+                $c->department === 'Production' ||
                 ($c->department instanceof \App\Enums\Department && $c->department === \App\Enums\Department::PRODUCTION) ||
-                (is_string($c->job) && Str::contains(strtolower($c->job), 'producer'))
-            )->values();
+                (is_string($c->job) && Str::contains(strtolower($c->job), 'producer')))->values();
 
             // Parse YouTube Trailer ID
             $youtubeId = null;
@@ -68,8 +65,9 @@ class TitleController extends Controller
                 ->where('id', '!=', $title->id)
                 ->where(function ($query) use ($genreIds, $title) {
                     if ($genreIds->isNotEmpty()) {
-                        $query->whereHas('genres', fn($q) => $q->whereIn('genres.id', $genreIds))
-                              ->orWhere('type', $title->type);
+                        $query
+                            ->whereHas('genres', fn($q) => $q->whereIn('genres.id', $genreIds))
+                            ->orWhere('type', $title->type);
                     } else {
                         $query->where('type', $title->type);
                     }
@@ -80,11 +78,13 @@ class TitleController extends Controller
                 ->get();
 
             // Generate Programmatic FAQs
-            $faqs = $this->generateTitleFaqs($title, $directors, $cast);
+            $faqs = $this->generateTitleFaqs($title, $directors, $writers, $cast);
 
             // Schema.org structured data
-            $structuredData = $structuredDataService->forTitle($title);
-            $faqSchema = !empty($faqs) ? $structuredDataService->forFaqs($faqs) : null;
+            $structuredData   = $structuredDataService->forTitle($title);
+            $faqSchema        = !empty($faqs) ? $structuredDataService->forFaqs($faqs) : null;
+            // HowTo schema: "how to watch {movie}", "how to stream {movie}" featured snippet
+            $watchGuideSchema = $structuredDataService->forWatchGuide($title);
 
             // All genres for contextual internal interlinking (Rule 9)
             $allGenres = Cache::remember('all_genres_nav_v3', 86400, fn() => \App\Models\Genre::withCount('titles')->orderBy('name')->get());
@@ -94,19 +94,20 @@ class TitleController extends Controller
             $seoDescription = SeoHelper::generateTitleMetaDescription($title, $cast, $directors);
 
             return [
-                'title' => $title,
-                'cast' => $cast,
-                'directors' => $directors,
-                'writers' => $writers,
-                'producers' => $producers,
-                'youtubeId' => $youtubeId,
-                'similarTitles' => $similarTitles,
-                'faqs' => $faqs,
-                'structuredData' => $structuredData,
-                'faqSchema' => $faqSchema,
-                'seoTitle' => $seoTitle,
-                'seoDescription' => $seoDescription,
-                'allGenres' => $allGenres,
+                'title'            => $title,
+                'cast'             => $cast,
+                'directors'        => $directors,
+                'writers'          => $writers,
+                'producers'        => $producers,
+                'youtubeId'        => $youtubeId,
+                'similarTitles'    => $similarTitles,
+                'faqs'             => $faqs,
+                'structuredData'   => $structuredData,
+                'faqSchema'        => $faqSchema,
+                'watchGuideSchema' => $watchGuideSchema,
+                'seoTitle'         => $seoTitle,
+                'seoDescription'   => $seoDescription,
+                'allGenres'        => $allGenres,
             ];
         });
 
@@ -116,8 +117,16 @@ class TitleController extends Controller
         $reviews = $title->reviews()->where('is_approved', true)->latest()->get();
         $reviewCount = $reviews->count();
         $ratingDistribution = [
-            10 => 0, 9 => 0, 8 => 0, 7 => 0, 6 => 0,
-            5 => 0, 4 => 0, 3 => 0, 2 => 0, 1 => 0,
+            10 => 0,
+            9 => 0,
+            8 => 0,
+            7 => 0,
+            6 => 0,
+            5 => 0,
+            4 => 0,
+            3 => 0,
+            2 => 0,
+            1 => 0,
         ];
         foreach ($reviews as $rev) {
             $r = (int) $rev->rating;
@@ -139,7 +148,7 @@ class TitleController extends Controller
     /**
      * Generate programmatic FAQs answering conversational search queries.
      */
-    protected function generateTitleFaqs(Title $title, $directors, $cast): array
+    protected function generateTitleFaqs(Title $title, $directors, $writers, $cast): array
     {
         $faqs = [];
         $isSeries = ($title->type instanceof \App\Enums\TitleType ? $title->type === \App\Enums\TitleType::TV_SERIES : $title->type === 'tv_series');
@@ -177,7 +186,7 @@ class TitleController extends Controller
 
         // B1. Cast & Actors ("{movie_name} cast", "cast of {movie_name}", "who stars in {movie_name}", "actors in {movie_name}")
         if ($cast->isNotEmpty()) {
-            $castWithChars = $cast->take(5)->map(function($c) {
+            $castWithChars = $cast->take(5)->map(function ($c) {
                 $name = $c->person?->name;
                 $char = $c->character_name;
                 return $char ? "{$name} as {$char}" : $name;
@@ -236,7 +245,7 @@ class TitleController extends Controller
         // E1. Director, Writer & Producer ("{movie_name} director", "who directed {movie_name}", "{movie_name} writer", "{movie_name} producer")
         if ($directors->isNotEmpty()) {
             $directorNames = $directors->map(fn($d) => $d->person?->name)->filter()->join(', ', ' and ');
-            $writerNames = $writers->isNotEmpty() ? $writers->map(fn($w) => $w->person?->name)->filter()->join(', ', ' and ') : null;
+            $writerNames = $writers && $writers->isNotEmpty() ? $writers->map(fn($w) => $w->person?->name)->filter()->join(', ', ' and ') : null;
             $writerPart = $writerNames ? " and written by {$writerNames}" : '';
 
             $faqs[] = [
@@ -245,11 +254,134 @@ class TitleController extends Controller
             ];
         }
 
-        // Story Synopsis ("{movie_name} movie", "{movie_name} film")
+        // Story Synopsis ("{movie_name} movie", "{movie_name} film", "what is {show} about")
         if (!empty($title->overview)) {
+            $typeLabel = $isSeries ? 'show' : 'movie';
             $faqs[] = [
-                'question' => "What is the story of {$title->title} about?",
+                'question' => "What is the story / plot of {$title->title} about?",
                 'answer' => SeoHelper::cleanMetaDescription($title->overview, 250),
+            ];
+        }
+
+        // F1. TOS Rating & IMDb-style Rating ("{movie} rating", "{movie} imdb rating", "{movie} movie rating")
+        if ($title->rating && (float) $title->rating > 0) {
+            $ratingText = number_format((float) $title->rating, 1);
+            $contentRatingPart = $title->content_rating
+                ? " The official age classification is {$title->content_rating}."
+                : '';
+            $faqs[] = [
+                'question' => "What is the rating of {$title->title}? ({$title->title} TonightOnScreen Rating)",
+                'answer'   => "{$title->title} holds a TonightOnScreen audience and critical rating of {$ratingText}/10.{$contentRatingPart} Explore full cast reactions and verified community reviews on TonightOnScreen.",
+            ];
+        }
+
+        // F2. Age Classification / Content Rating ("{movie} age rating", "{movie} certificate", "{movie} rating age")
+        if ($title->content_rating) {
+            $faqs[] = [
+                'question' => "What is the age rating / content classification of {$title->title}?",
+                'answer'   => "{$title->title} carries an official content rating of {$title->content_rating}. This classification helps parents and viewers make informed decisions about suitability before watching.",
+            ];
+        }
+
+        // F3. Character-to-Actor Lookup ("who played [character] in {movie}", "[character] actor", "{character} braveheart")
+        if ($cast->isNotEmpty()) {
+            $characterActorPairs = $cast
+                ->filter(fn($c) => !empty($c->character_name) && !empty($c->person?->name))
+                ->take(6)
+                ->map(fn($c) => "{$c->character_name} is played by {$c->person->name}")
+                ->join('; ');
+
+            if ($characterActorPairs) {
+                $faqs[] = [
+                    'question' => "Who plays which character in {$title->title}? (Character & Actor Guide)",
+                    'answer'   => "In {$title->title}: {$characterActorPairs}. Find complete character profiles, role details, and full actor biographies on TonightOnScreen.",
+                ];
+            }
+        }
+
+        // F4. Title / Name Meaning ("{movie} meaning", "{movie} title meaning", "rangasthalam meaning")
+        // Prioritise non-English titles or any title with a tagline that could explain its name
+        if (!empty($title->tagline) && !empty($title->overview)) {
+            $titleWords    = explode(' ', $title->title);
+            $hasNonAscii   = collect($titleWords)->some(fn($w) => (bool) preg_match('/[^\x00-\x7F]/', $w));
+            $likelyNonEn   = $hasNonAscii || (in_array(strtolower($title->original_language ?? ''), SeoHelper::INDIAN_LANGUAGES));
+            if ($likelyNonEn) {
+                $faqs[] = [
+                    'question' => "What is the meaning of the title \"{$title->title}\"?",
+                    'answer'   => "The title \"{$title->title}\" is accompanied by the tagline: \"{$title->tagline}\". " .
+                                  "The name reflects the core themes of the {$typeWord}. " .
+                                  "Explore the full synopsis and storyline context on TonightOnScreen.",
+                ];
+            }
+        }
+
+        // F5. Franchise / Sequel Identification ("{movie} 2", "{franchise} sequel order", "{movie} part of franchise?")
+        if ($title->relationLoaded('productionCompanies') && $title->productionCompanies->isNotEmpty()) {
+            $companyNames = $title->productionCompanies->pluck('name')->join(', ', ' and ');
+            $faqs[] = [
+                'question' => "Is {$title->title} part of a franchise or does it have sequels?",
+                'answer'   => "{$title->title} was produced by {$companyNames}. " .
+                              "To discover related sequels, prequels, and the complete franchise viewing order, " .
+                              "explore the production company catalogue and genre collections on TonightOnScreen.",
+            ];
+        }
+
+        // G1. Seasons & Episodes Count — Series only ("how many seasons does {show} have", "how many episodes")
+        if ($isSeries && $title->relationLoaded('seasons') && $title->seasons->isNotEmpty()) {
+            $seasonCount  = $title->seasons->count();
+            $episodeCount = $title->seasons->sum(fn($s) => $s->episodes->count());
+            $seasonWord   = Str::plural('season', $seasonCount);
+            $faqs[] = [
+                'question' => "How many seasons and episodes does {$title->title} have?",
+                'answer'   => "{$title->title} has {$seasonCount} {$seasonWord}" .
+                              ($episodeCount > 0 ? " with a total of {$episodeCount} episodes." : ".") .
+                              " Complete season and episode guides, including air dates and synopses, are available on TonightOnScreen.",
+            ];
+        }
+
+        // G2. Which studio / production company made it? ("{movie} studio", "who made {movie}", "{movie} production company")
+        if ($title->relationLoaded('productionCompanies') && $title->productionCompanies->isNotEmpty()) {
+            $companies = $title->productionCompanies->pluck('name')->join(', ', ' and ');
+            $faqs[] = [
+                'question' => "Which studio or production company made {$title->title}?",
+                'answer'   => "{$title->title} was produced by {$companies}. " .
+                              "Explore their complete film catalogue and other acclaimed productions on TonightOnScreen.",
+            ];
+        }
+
+        // G3. Country of Origin ("{movie} which country", "is {movie} an Indian movie", "{movie} origin")
+        if (!empty($title->origin_country)) {
+            $langPart = $title->original_language
+                ? ", originally produced in the " . ucfirst($title->original_language) . " language"
+                : '';
+            $faqs[] = [
+                'question' => "Which country is {$title->title} from? (Origin & Language)",
+                'answer'   => "{$title->title} is a {$title->origin_country} production{$langPart}. " .
+                              "It represents the rich cinematic heritage of {$title->origin_country} cinema.",
+            ];
+        }
+
+        // G4. Is it worth watching? ("is {movie} worth watching", "should i watch {movie}", "{movie} recommended")
+        if ($title->rating && (float) $title->rating > 0) {
+            $r = (float) $title->rating;
+            $rStr = number_format($r, 1);
+            if ($r >= 8.5) {
+                $verdict = "Masterpiece — Essential Viewing";
+                $reason  = "With an outstanding {$rStr}/10 rating, {$title->title} is universally acclaimed and considered one of the finest {$typeWord}s of its kind.";
+            } elseif ($r >= 7.5) {
+                $verdict = "Highly Recommended";
+                $reason  = "Rated {$rStr}/10, {$title->title} is a highly regarded {$typeWord} that consistently earns strong audience and critical praise.";
+            } elseif ($r >= 6.5) {
+                $verdict = "Recommended — Worth a Watch";
+                $reason  = "With a solid {$rStr}/10 rating, {$title->title} is an enjoyable {$typeWord} that most viewers find worthwhile.";
+            } else {
+                $verdict = "Mixed Reception";
+                $reason  = "{$title->title} carries a {$rStr}/10 rating, reflecting a divided audience and critical response.";
+            }
+            $faqs[] = [
+                'question' => "Is {$title->title} worth watching? (Recommendation & Verdict)",
+                'answer'   => "{$verdict}. {$reason} " .
+                              "Read in-depth verified audience reviews and the complete critical breakdown on TonightOnScreen.",
             ];
         }
 

@@ -50,11 +50,30 @@ class StructuredDataService
             "{$title->title} OTT platform",
             "who directed {$title->title}",
             "{$title->title} director",
+            // New: rating, plot, age classification, sequel patterns
+            "{$title->title} rating",
+            "{$title->title} age rating",
+            "{$title->title} content rating",
+            "what is {$title->title} about",
+            "{$title->title} plot",
+            "{$title->title} synopsis",
+            "{$title->title} storyline",
+            "{$title->title} sequel",
+            "{$title->title} franchise",
+            "{$title->title} production company",
+            "{$title->title} country of origin",
+            "is {$title->title} worth watching",
+            "how to watch {$title->title}",
         ];
+        if ($title->content_rating) {
+            $keywords[] = "{$title->title} {$title->content_rating} rating";
+        }
         if ($title->relationLoaded('genres') && $title->genres->isNotEmpty()) {
             foreach ($title->genres->pluck('name') as $gName) {
                 $keywords[] = "best {$gName} movies";
                 $keywords[] = "{$gName} movie";
+                $keywords[] = "best {$gName} movies to stream";
+                $keywords[] = "{$gName} movies on demand";
             }
         }
         $schema['keywords'] = implode(', ', array_unique($keywords));
@@ -73,7 +92,13 @@ class StructuredDataService
         // Release Date & Creation
         if ($title->release_date) {
             $schema['datePublished'] = $title->release_date->format('Y-m-d');
-            $schema['dateCreated'] = $title->release_date->format('Y-m-d');
+            $schema['dateCreated']   = $title->release_date->format('Y-m-d');
+        }
+
+        // Content Rating — enables age-rating rich results in Google / Bing
+        // Queries: "{movie} age rating", "scarface rating age", "{movie} certificate"
+        if ($title->content_rating) {
+            $schema['contentRating'] = $title->content_rating;
         }
 
         // ISO 8601 Runtime Duration (e.g. PT180M)
@@ -166,16 +191,49 @@ class StructuredDataService
         // Trailer Video Object (if available)
         if (!empty($title->trailer_url)) {
             $schema['trailer'] = [
-                '@type' => 'VideoObject',
-                'name' => "{$title->title} Official Trailer",
-                'embedUrl' => $title->trailer_url,
+                '@type'        => 'VideoObject',
+                'name'         => "{$title->title} Official Trailer",
+                'embedUrl'     => $title->trailer_url,
                 'thumbnailUrl' => $title->backdrop_url ?: $title->poster_url ?: asset('Tonight OnScreen Logo.png'),
-                'description' => "Official trailer for {$title->title}",
-                'uploadDate' => ($title->release_date ?? now())->format('Y-m-d'),
+                'description'  => "Official trailer for {$title->title}",
+                'uploadDate'   => ($title->release_date ?? now())->format('Y-m-d'),
             ];
         }
 
         return $schema;
+    }
+
+    /**
+     * Build Schema.org HowTo structured data for the streaming watch guide.
+     * Targets: "how to watch {movie}", "how to stream {movie} online", "best way to watch {franchise} in order"
+     */
+    public function forWatchGuide(Title $title): ?array
+    {
+        if (!$title->relationLoaded('streamingPlatforms') || $title->streamingPlatforms->isEmpty()) {
+            return null;
+        }
+
+        $steps = $title->streamingPlatforms->map(fn($p) => [
+            '@type' => 'HowToStep',
+            'name'  => "Watch {$title->title} on {$p->name}",
+            'text'  => "Open {$p->name} and search for \"{$title->title}\" to start watching instantly" .
+                       (!empty($p->pivot->quality) ? " in {$p->pivot->quality}" : '') . '.',
+            'url'   => !empty($p->pivot->watch_url) ? $p->pivot->watch_url
+                       : (!empty($p->website) ? $p->website : route('platforms.show', $p->slug)),
+        ])->values()->all();
+
+        if (empty($steps)) {
+            return null;
+        }
+
+        return [
+            '@context'    => 'https://schema.org',
+            '@type'       => 'HowTo',
+            'name'        => "How to Watch {$title->title} Online — Streaming Guide",
+            'description' => "Step-by-step guide to streaming {$title->title} on all available OTT platforms right now.",
+            'totalTime'   => 'PT2M',
+            'step'        => $steps,
+        ];
     }
 
     /**
@@ -265,6 +323,15 @@ class StructuredDataService
             "{$person->name} first movie",
             "{$person->name} achievements",
             "{$person->name} total movies count",
+            // New semantic patterns
+            "{$person->name} career history",
+            "{$person->name} acting career",
+            "{$person->name} first hit movie",
+            "{$person->name} breakthrough role",
+            "{$person->name} ethnicity",
+            "{$person->name} background",
+            "{$person->name} nationality",
+            "{$person->name} origin",
         ];
 
         if ($person->known_for_department === 'Directing') {
@@ -280,6 +347,26 @@ class StructuredDataService
         }
 
         $schema['keywords'] = implode(', ', array_unique($kw));
+
+        // hasOccupation — richer semantic signal than jobTitle for Knowledge Graph matching
+        $schema['hasOccupation'] = [
+            '@type'                 => 'Occupation',
+            'name'                  => ucfirst($roleName),
+            'occupationalCategory'  => 'Arts, Design, Entertainment, Sports, and Media Occupations',
+        ];
+
+        // nationality / birthPlace geographic signal — helps with "{person} ethnicity" and "{person} nationality" queries
+        if (!empty($person->birth_place)) {
+            $schema['nationality'] = [
+                '@type' => 'Country',
+                'name'  => $person->birth_place,
+            ];
+        }
+
+        // gender — semantic disambiguation between "actor" and "actress" queries
+        if (!empty($person->gender)) {
+            $schema['gender'] = $person->gender;
+        }
 
         return $schema;
     }

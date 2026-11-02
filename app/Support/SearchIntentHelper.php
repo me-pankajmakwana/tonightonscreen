@@ -31,20 +31,58 @@ class SearchIntentHelper
         $clean = $q;
         $isPerson = false;
 
-        // F. Discovery / Recommendations ("best {genre} movies", "top {genre} movies", "best new {genre} films")
-        if (preg_match('/^(?:best|top|nice|new)\s+(?:new\s+)?([a-z0-9\-]+)\s+(?:movies|films)/i', $q, $m)) {
-            $genreName = ucfirst(trim($m[1]));
+        // ── Discovery / Trending / Streaming shortcuts (return early) ──────────
+
+        // "trending movies right now", "trending movies and shows", "what's trending"
+        if (preg_match('/trending\s+(?:movies|shows|series|tv)/i', $q)) {
             return [
-                'intent' => 'genre',
-                'intent_label' => "Best {$genreName} Movies",
-                'subject' => trim($m[1]),
-                'anchor' => null,
-                'is_genre' => true,
-                'is_person' => false,
+                'intent'       => 'discovery_trending',
+                'intent_label' => 'Trending Right Now',
+                'subject'      => 'trending',
+                'anchor'       => null,
+                'is_genre'     => false,
+                'is_person'    => false,
             ];
         }
 
-        // 2A. People: Who is {person_name}
+        // "best movies on netflix", "netflix listings", "netflix catalogue", "movies on prime"
+        if (preg_match('/^(?:best\s+movies\s+on|movies\s+on|(.+?)\s+(?:listings|catalogue|catalog))$/i', $q)) {
+            return [
+                'intent'       => 'streaming_platform',
+                'intent_label' => 'Platform Catalogue',
+                'subject'      => $q,
+                'anchor'       => null,
+                'is_genre'     => false,
+                'is_person'    => false,
+            ];
+        }
+
+        // F. Discovery / Recommendations ("best {genre} movies", "top {genre} movies", "{genre} movies on demand", "{genre} on demand")
+        if (preg_match('/^(?:best|top|nice|new)\s+(?:new\s+)?([a-z0-9\-]+)\s+(?:movies|films)/i', $q, $m)) {
+            $genreName = ucfirst(trim($m[1]));
+            return [
+                'intent'       => 'genre',
+                'intent_label' => "Best {$genreName} Movies",
+                'subject'      => trim($m[1]),
+                'anchor'       => null,
+                'is_genre'     => true,
+                'is_person'    => false,
+            ];
+        }
+        if (preg_match('/^([a-z0-9\-]+)\s+(?:movies\s+on\s+demand|on\s+demand|streaming|to\s+stream)$/i', $q, $m)) {
+            return [
+                'intent'       => 'genre',
+                'intent_label' => ucfirst($m[1]) . ' Movies On Demand',
+                'subject'      => trim($m[1]),
+                'anchor'       => null,
+                'is_genre'     => true,
+                'is_person'    => false,
+            ];
+        }
+
+        // ── People Prefix patterns ─────────────────────────────────────────────
+
+        // 2A. Who is {person}
         if (preg_match('/^(?:who\s+is)\s+(.+)$/i', $q, $m)) {
             $intent = 'person_bio';
             $intentLabel = 'Biography & Overview';
@@ -52,7 +90,14 @@ class SearchIntentHelper
             $clean = $m[1];
             $isPerson = true;
         }
-        // 2B/C/D. People Prefixes: "actor {person}", "actress {person}", "director {person}", "producer {person}"
+        // "what is {show/movie} about" — title intent (before person prefixes)
+        elseif (preg_match('/^(?:what\s+is)\s+(.+?)\s+(?:about|show\s+about|movie\s+about|film\s+about)$/i', $q, $m)) {
+            $intent = 'title_about';
+            $intentLabel = 'Plot & What It\'s About';
+            $anchor = '#faqs';
+            $clean = $m[1];
+        }
+        // 2B/C/D. People Prefixes
         elseif (preg_match('/^(?:actor|actress)\s+(.+)$/i', $q, $m)) {
             $intent = 'person_actor';
             $intentLabel = 'Actor Portfolio';
@@ -72,15 +117,15 @@ class SearchIntentHelper
             $clean = $m[1];
             $isPerson = true;
         }
-        // 1B. Cast & Actors (Movie pattern: "cast of {X}", "who stars in {X}", "who was in {X}", "actors in {X}")
+        // 1B. Cast & Actors (Movie: "cast of {X}", "who stars in {X}")
         elseif (preg_match('/^(?:cast\s+of|actors\s+in|who\s+stars\s+in|who\s+was\s+in)\s+(.+)$/i', $q, $m)) {
             $intent = 'cast';
             $intentLabel = 'Cast & Characters';
             $anchor = '#cast';
             $clean = $m[1];
         }
-        // 1D. OTT & Streaming ("where to watch {X}")
-        elseif (preg_match('/^(?:where\s+to\s+watch)\s+(.+)$/i', $q, $m)) {
+        // 1D. OTT ("where to watch {X}", "how to watch {X}", "how to stream {X}")
+        elseif (preg_match('/^(?:where\s+to\s+watch|how\s+to\s+watch|how\s+to\s+stream)\s+(.+)$/i', $q, $m)) {
             $intent = 'streaming';
             $intentLabel = 'Where to Watch OTT';
             $anchor = '#where-to-watch';
@@ -93,7 +138,9 @@ class SearchIntentHelper
             $anchor = '#crew';
             $clean = $m[1];
         }
-        // 2A. People: Biography, details, age, height, dob, birthplace, native place
+        // ── People Suffix patterns ─────────────────────────────────────────────
+
+        // 2A. Biography, details, age, height, dob, birthplace
         elseif (preg_match('/^(.+?)\s+(?:biography|bio)$/i', $q, $m)) {
             $intent = 'person_bio';
             $intentLabel = 'Biography';
@@ -131,7 +178,15 @@ class SearchIntentHelper
             $clean = $m[1];
             $isPerson = true;
         }
-        // 2B/C/D. People: Debut / First movie / Debut
+        // NEW: Ethnicity / Background / Nationality ("{person} ethnicity", "{person} ethnicity and race")
+        elseif (preg_match('/^(.+?)\s+(?:ethnicity(?:\s+and\s+race)?|cultural\s+background|nationality|background)$/i', $q, $m)) {
+            $intent = 'person_ethnicity';
+            $intentLabel = 'Ethnicity & Background';
+            $anchor = '#fast-facts';
+            $clean = $m[1];
+            $isPerson = true;
+        }
+        // 2B/C/D. Debut / First movie
         elseif (preg_match('/^(.+?)\s+(?:debut\s+movie|first\s+movie|debut)$/i', $q, $m)) {
             $intent = 'person_debut';
             $intentLabel = 'Debut Movie';
@@ -139,7 +194,23 @@ class SearchIntentHelper
             $clean = $m[1];
             $isPerson = true;
         }
-        // 2B. People: Achievements / Awards
+        // NEW: First hit movie / breakthrough role
+        elseif (preg_match('/^(.+?)\s+(?:first\s+hit\s+movie|first\s+hit|breakthrough\s+role)$/i', $q, $m)) {
+            $intent = 'person_first_hit';
+            $intentLabel = 'First Hit Movie';
+            $anchor = '#faqs';
+            $clean = $m[1];
+            $isPerson = true;
+        }
+        // NEW: Career history / acting career
+        elseif (preg_match('/^(.+?)\s+(?:acting\s+career|career\s+history|career)$/i', $q, $m)) {
+            $intent = 'person_career';
+            $intentLabel = 'Career History';
+            $anchor = '#faqs';
+            $clean = $m[1];
+            $isPerson = true;
+        }
+        // 2B. Achievements / Awards
         elseif (preg_match('/^(.+?)\s+(?:achievements|awards)$/i', $q, $m)) {
             $intent = 'person_achievements';
             $intentLabel = 'Achievements & Awards';
@@ -147,7 +218,7 @@ class SearchIntentHelper
             $clean = $m[1];
             $isPerson = true;
         }
-        // 2B. People: Total movies count
+        // 2B. Total movies count
         elseif (preg_match('/^(.+?)\s+(?:total\s+movies\s+count|total\s+movies|movie\s+count)$/i', $q, $m)) {
             $intent = 'person_count';
             $intentLabel = 'Total Movies Count';
@@ -155,7 +226,7 @@ class SearchIntentHelper
             $clean = $m[1];
             $isPerson = true;
         }
-        // 2B/C/D. People: Filmography / Movies and TV Shows
+        // 2B/C/D. Filmography / Movies and TV Shows
         elseif (preg_match('/^(.+?)\s+(?:filmography)$/i', $q, $m)) {
             $intent = 'person_filmography';
             $intentLabel = 'Complete Filmography';
@@ -175,7 +246,7 @@ class SearchIntentHelper
             $clean = $m[1];
             $isPerson = true;
         }
-        // 2C. Director specific patterns
+        // 2C. Director specific
         elseif (preg_match('/^(.+?)\s+(?:directed\s+movies|directorial\s+movies)$/i', $q, $m)) {
             $intent = 'person_directed_movies';
             $intentLabel = 'Directed Movies';
@@ -195,7 +266,7 @@ class SearchIntentHelper
             $clean = $m[1];
             $isPerson = true;
         }
-        // 2D. Producer specific: Production company
+        // 2D. Production company
         elseif (preg_match('/^(.+?)\s+(?:production\s+company|production\s+house|banner)$/i', $q, $m)) {
             $intent = 'person_production_company';
             $intentLabel = 'Production Company';
@@ -203,7 +274,7 @@ class SearchIntentHelper
             $clean = $m[1];
             $isPerson = true;
         }
-        // Suffix: "{person} actor", "{person} actress", "{person} director", "{person} producer"
+        // Suffix: "{person} actor/actress/director/producer"
         elseif (preg_match('/^(.+?)\s+(?:actor|actress)$/i', $q, $m)) {
             $intent = 'person_actor';
             $intentLabel = 'Actor Profile';
@@ -211,7 +282,6 @@ class SearchIntentHelper
             $clean = $m[1];
             $isPerson = true;
         } elseif (preg_match('/^(.+?)\s+(?:director)$/i', $q, $m)) {
-            // Can be "{person} director" or "{movie} director"
             $intent = 'director';
             $intentLabel = 'Director';
             $anchor = '#filmography';
@@ -224,7 +294,7 @@ class SearchIntentHelper
             $clean = $m[1];
             $isPerson = true;
         }
-        // "{person_name} movies" or "{person_name} films" (plural - filmography)
+        // "{person} movies" / "{person} films"
         elseif (preg_match('/^(.+?)\s+(?:movies|films)$/i', $q, $m)) {
             $intent = 'person_movies';
             $intentLabel = 'Filmography & Movies';
@@ -232,14 +302,52 @@ class SearchIntentHelper
             $clean = $m[1];
             $isPerson = true;
         }
-        // 1B. Cast & Characters (movie: "{X} cast", "{X} actors", "{X} characters")
+
+        // ── Movie / Title patterns ─────────────────────────────────────────────
+
+        // 1B. Cast & Characters ("{X} cast", "{X} actors", "{X} characters")
         elseif (preg_match('/^(.+?)\s+(?:cast\s+list|character\s+names|movie\s+actors|film\s+cast\s+list|cast|actors|characters)$/i', $q, $m)) {
             $intent = 'cast';
             $intentLabel = 'Cast & Characters';
             $anchor = '#cast';
             $clean = $m[1];
         }
-        // 1C. Budget & Box Office ("{X} budget and collection", "{X} box office collection", "{X} hit or flop")
+        // NEW: "{movie} plot" / "{movie} synopsis" / "{movie} storyline"
+        elseif (preg_match('/^(.+?)\s+(?:plot|synopsis|storyline|story)$/i', $q, $m)) {
+            $intent = 'title_plot';
+            $intentLabel = 'Plot & Storyline';
+            $anchor = '#faqs';
+            $clean = $m[1];
+        }
+        // NEW: "{movie} rating" / "{movie} age rating" / "{movie} imdb rating"
+        elseif (preg_match('/^(.+?)\s+(?:age\s+rating|content\s+rating|imdb\s+rating|ott\s+rating|rating)$/i', $q, $m)) {
+            $intent = 'title_rating';
+            $intentLabel = 'Rating & Classification';
+            $anchor = '#faqs';
+            $clean = $m[1];
+        }
+        // NEW: "is {movie} worth watching" / "should i watch {movie}"
+        elseif (preg_match('/^(?:is\s+(.+?)\s+worth\s+watching|should\s+i\s+watch\s+(.+?))$/i', $q, $m)) {
+            $intent = 'title_recommendation';
+            $intentLabel = 'Worth Watching?';
+            $anchor = '#faqs';
+            $clean = $m[1] ?: $m[2];
+        }
+        // NEW: "{movie} sequel" / "{movie} franchise" / "{movie} franchise order"
+        elseif (preg_match('/^(.+?)\s+(?:sequel|franchise|franchise\s+order|part\s+\d+|viewing\s+order)$/i', $q, $m)) {
+            $intent = 'title_sequel';
+            $intentLabel = 'Sequel & Franchise Order';
+            $anchor = '#faqs';
+            $clean = $m[1];
+        }
+        // NEW: "{movie} meaning" / "{movie} title meaning"
+        elseif (preg_match('/^(.+?)\s+(?:meaning|title\s+meaning|name\s+meaning)$/i', $q, $m)) {
+            $intent = 'title_meaning';
+            $intentLabel = 'Title Meaning';
+            $anchor = '#faqs';
+            $clean = $m[1];
+        }
+        // 1C. Budget & Box Office
         elseif (preg_match('/^(.+?)\s+(?:budget\s+and\s+collection|box\s+office\s+collection|worldwide\s+collection|production\s+budget|hit\s+or\s+flop|budget|collection)$/i', $q, $m)) {
             $intent = 'box_office';
             $intentLabel = 'Budget & Collection';
@@ -253,7 +361,7 @@ class SearchIntentHelper
             $anchor = '#where-to-watch';
             $clean = $m[1];
         }
-        // 1A. Movie Information & Runtime ("when did {X} come out", "{X} runtime", "{X} release date")
+        // 1A. Movie Information & Runtime
         elseif (preg_match('/^(?:when\s+did)\s+(.+?)\s+(?:come\s+out)$/i', $q, $m)) {
             $intent = 'release_date';
             $intentLabel = 'Release Date';
@@ -268,18 +376,19 @@ class SearchIntentHelper
             $clean = $m[1];
         }
 
-        // Clean any remaining standalone noise words like "movie" or "film"
+        // Clean any remaining standalone noise words
         $clean = preg_replace('/\b(?:movie|film)\b/i', '', $clean);
         $clean = trim($clean, " \t\n\r\0\x0B:?");
 
         return [
-            'intent' => $intent,
+            'intent'       => $intent,
             'intent_label' => $intentLabel,
-            'subject' => $clean ?: $q,
-            'anchor' => $anchor,
-            'is_genre' => false,
-            'is_person' => $isPerson,
+            'subject'      => $clean ?: $q,
+            'anchor'       => $anchor,
+            'is_genre'     => false,
+            'is_person'    => $isPerson,
         ];
     }
 }
+
 

@@ -27,8 +27,8 @@ class PlatformController extends Controller
             ->take(8)
             ->get();
 
-        $seoTitle = "Streaming Services Guide — Watch Movies & Shows on Netflix, Disney+, Prime & More | TonightOnScreen";
-        $seoDescription = "Find out where to stream your favorite movies and TV shows. Browse streaming platforms including Netflix, Disney+, Amazon Prime Video, Apple TV+, and more with release guides.";
+        $seoTitle = "Streaming Services Guide — Find What to Watch on Netflix, Disney+, Prime & More | TonightOnScreen";
+        $seoDescription = "Your complete streaming guide. Browse every streaming platform — Netflix, Disney+, Amazon Prime Video, Apple TV+ and more. Find the best movies and TV shows available to stream right now.";
 
         return view('platforms.index', compact('platforms', 'featuredTitles', 'seoTitle', 'seoDescription'));
     }
@@ -78,8 +78,9 @@ class PlatformController extends Controller
             ->take(6)
             ->get();
 
-        $seoTitle = "Best Movies & TV Shows on {$platform->name} Tonight — Streaming Guide | TonightOnScreen";
-        $seoDescription = "What to watch on {$platform->name} right now. Discover top-rated films, critically acclaimed series, and new releases streaming on {$platform->name} with ratings & reviews.";
+        $platformNameUc = ucwords($platform->name);
+        $seoTitle = "{$platformNameUc} Movies & TV Shows Catalogue — Stream Tonight | TonightOnScreen";
+        $seoDescription = "Browse the complete {$platformNameUc} streaming catalogue. Find trending movies, new series, top-rated picks, and everything available to watch on {$platformNameUc} right now — with ratings & reviews.";
 
         return view('platforms.show', compact(
             'platform',

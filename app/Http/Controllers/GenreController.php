@@ -160,6 +160,13 @@ class GenreController extends Controller
             'glow' => 'bg-amber-500/15',
         ];
 
+        // Streaming-discovery SEO metadata targeting queries like:
+        // "sci fi on demand", "best {genre} movies to stream", "{genre} movies on demand", "adventure movies"
+        $genreName = $genre->name;
+        $seoTitle       = "Best {$genreName} Movies & TV Shows to Stream On Demand | TonightOnScreen";
+        $seoDescription = "Discover the top-rated {$genreName} movies and TV shows available to stream right now. " .
+                          "Browse {$genre->titles_count} curated {$genreName} titles with ratings, reviews, and streaming platform links on TonightOnScreen.";
+
         return view('genres.show', compact(
             'genre',
             'titles',
@@ -171,7 +178,9 @@ class GenreController extends Controller
             'sort',
             'otherGenres',
             'allGenres',
-            'theme'
+            'theme',
+            'seoTitle',
+            'seoDescription'
         ));
     }
 }

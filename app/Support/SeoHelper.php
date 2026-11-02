@@ -157,6 +157,7 @@ class SeoHelper
     {
         $year = $title->release_year ? "({$title->release_year}) " : '';
         $isSeries = ($title->type?->value ?? $title->type) === 'tv_series';
+        $ratingTag = $title->content_rating ? " [{$title->content_rating}]" : '';
 
         if ($isSeries) {
             return "{$title->title} {$year}TV Series — Cast, Episodes, OTT Streaming & Reviews | " . self::SITE_NAME;
@@ -167,13 +168,13 @@ class SeoHelper
 
         if ($hasFinancials) {
             if ($title->isIndian()) {
-                return "{$title->title} {$year}Film — Cast, Budget and Collection, OTT | " . self::SITE_NAME;
+                return "{$title->title} {$year}Film{$ratingTag} — Cast, Budget and Collection, OTT | " . self::SITE_NAME;
             }
 
-            return "{$title->title} {$year}Film — Cast, Budget & Box Office Collection | " . self::SITE_NAME;
+            return "{$title->title} {$year}Film{$ratingTag} — Cast, Budget & Box Office Collection | " . self::SITE_NAME;
         }
 
-        return "{$title->title} {$year}Film — Full Cast, Director, Storyline, OTT & Reviews | " . self::SITE_NAME;
+        return "{$title->title} {$year}Film{$ratingTag} — Full Cast, Director, Storyline, OTT & Reviews | " . self::SITE_NAME;
     }
 
     /**
@@ -236,9 +237,18 @@ class SeoHelper
             $parts[] = $financialSnippet;
         }
 
+        // Rating & age classification signals ("{movie} rating", "{movie} age rating")
+        if (!empty($title->rating) && (float) $title->rating > 0) {
+            $ratingNum = number_format((float) $title->rating, 1);
+            $ageSnippet = $title->content_rating ? " Rated {$title->content_rating}." : '';
+            $parts[] = "Rating: {$ratingNum}/10.{$ageSnippet}";
+        } elseif ($title->content_rating) {
+            $parts[] = "Age rating: {$title->content_rating}.";
+        }
+
         if (!empty($title->overview)) {
             $cleanedOverview = trim(preg_replace('/\s+/', ' ', strip_tags($title->overview)));
-            $parts[] = Str::limit($cleanedOverview, 100);
+            $parts[] = Str::limit($cleanedOverview, 80);
         }
 
         $parts[] = "Explore full cast, storyline, box office & where to watch OTT on " . self::SITE_NAME . ".";

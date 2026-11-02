@@ -78,7 +78,7 @@ class PersonController extends Controller
      */
     public function show(string $slug)
     {
-        $cacheKey = "person_profile_v4_{$slug}";
+        $cacheKey = "person_profile_v5_{$slug}";
 
         $data = Cache::remember($cacheKey, now()->addHours(24), function () use ($slug) {
             $person = Person::query()
@@ -169,6 +169,50 @@ class PersonController extends Controller
                 'hitMovies' => $hitMovies,
             ];
 
+            // Frequent Collaborators & Co-Stars (High-Impact Internal SEO Linking)
+            $titleIds = $uniqueTitles->pluck('id');
+            $collaboratorCredits = \App\Models\Credit::query()
+                ->where('creditable_type', 'App\Models\Title')
+                ->whereIn('creditable_id', $titleIds)
+                ->where('person_id', '!=', $person->id)
+                ->selectRaw('person_id, count(distinct creditable_id) as shared_count')
+                ->groupBy('person_id')
+                ->orderByDesc('shared_count')
+                ->take(6)
+                ->get();
+
+            $collaborators = collect();
+            if ($collaboratorCredits->isNotEmpty()) {
+                $collaboratorPeople = Person::whereIn('id', $collaboratorCredits->pluck('person_id'))
+                    ->get()
+                    ->keyBy('id');
+
+                foreach ($collaboratorCredits as $c) {
+                    if (isset($collaboratorPeople[$c->person_id])) {
+                        $p = $collaboratorPeople[$c->person_id];
+                        $p->shared_count = $c->shared_count;
+                        $collaborators->push($p);
+                    }
+                }
+            }
+
+            // Fallback to top featured talents in same department/industry if fewer than 4 direct collaborators
+            if ($collaborators->count() < 4) {
+                $fallbackNeeded = 6 - $collaborators->count();
+                $existingIds = $collaborators->pluck('id')->push($person->id)->toArray();
+                $fallbacks = Person::query()
+                    ->whereNotIn('id', $existingIds)
+                    ->where('status', 'active')
+                    ->where('known_for_department', $person->known_for_department ?: 'Acting')
+                    ->orderByDesc('is_featured')
+                    ->take($fallbackNeeded)
+                    ->get();
+                foreach ($fallbacks as $fb) {
+                    $fb->shared_count = 0;
+                    $collaborators->push($fb);
+                }
+            }
+
             // Format timeline items sorted newest first
             $timelineItems = $titleCredits
                 ->sortByDesc(fn($c) => $c->creditable->release_date?->timestamp ?? 0)
@@ -220,11 +264,11 @@ class PersonController extends Controller
                 $producing
             );
 
-            // SEO Meta Information targeting exact search keywords (Clusters A, B, C, D)
+            // SEO Meta Information targeting exact search keywords
             $debutName = $earliestTitle ? $earliestTitle->title : 'first project';
             $birthPlace = $person->birth_place ?: 'Cinema';
-            $seoTitle = "{$person->name} Movies List, Biography, Debut & Hit Films, Birth Place | TonightOnScreen";
-            $seoDescription = "Explore {$person->name}'s biography, birth place ({$birthPlace}), debut movie ({$debutName}), hit movies list, total movie count, and full filmography on TonightOnScreen.";
+            $seoTitle = "{$person->name} Biography, Age, Height, Movies List, Debut & Hit Films | TonightOnScreen";
+            $seoDescription = "Explore {$person->name}'s biography, age ({$person->age}), height ({$person->height}), birth place ({$birthPlace}), debut movie ({$debutName}), hit movies list, and full filmography on TonightOnScreen.";
 
             $roleKeywords = [];
             if ($person->known_for_department === 'Directing' || $directing->isNotEmpty()) {
@@ -250,10 +294,21 @@ class PersonController extends Controller
                 "{$person->name} biography",
                 "who is {$person->name}",
                 "{$person->name} details",
+                "{$person->name} full name",
+                "{$person->name} real name",
                 "{$person->name} age",
                 "{$person->name} height",
+                "{$person->name} zodiac sign",
                 "{$person->name} date of birth",
                 "{$person->name} birthplace",
+                "{$person->name} hometown",
+                "{$person->name} residence",
+                "{$person->name} education",
+                "{$person->name} qualification",
+                "{$person->name} nationality",
+                "{$person->name} languages",
+                "{$person->name} hobbies",
+                "{$person->name} other talents",
                 "{$person->name} native place",
                 "{$person->name} movies",
                 "{$person->name} TV shows",
@@ -264,7 +319,6 @@ class PersonController extends Controller
                 "{$person->name} achievements",
                 "{$person->name} total movies count",
                 "{$person->name} hit movies",
-                // New: career history, ethnicity, breakthrough patterns
                 "{$person->name} career history",
                 "{$person->name} acting career",
                 "{$person->name} first hit movie",
@@ -283,6 +337,7 @@ class PersonController extends Controller
                 'producing' => $producing,
                 'knownFor' => $knownFor,
                 'hitMovies' => $hitMovies,
+                'collaborators' => $collaborators,
                 'stats' => $stats,
                 'timelineItems' => $timelineItems,
                 'decades' => $decades,
@@ -362,6 +417,58 @@ class PersonController extends Controller
                 'answer'   => "{$person->name} was born in {$placeText} and is associated with {$ethnicOrigin}. " .
                               "Their career spans {$stats['careerSpan']} with credits across {$stats['totalMoviesCount']} movies and {$stats['totalSeriesCount']} TV shows, " .
                               "reflecting a rich cross-cultural body of work cataloged on TonightOnScreen.",
+            ];
+        }
+
+        // Q2c: Full Legal / Real Name & Stage Moniker
+        if ($person->full_name || $person->stage_name) {
+            $realNameText = $person->full_name ?: $person->name;
+            $stageText = $person->stage_name ? " under the popular stage moniker or screen name '{$person->stage_name}'" : "";
+            $faqs[] = [
+                'question' => "What is {$person->name}'s real full name and stage name?",
+                'answer' => "{$person->name}'s official full legal name is {$realNameText}{$stageText}. In industry credits and global databases, they are documented across their catalog under these recognized identities.",
+            ];
+        }
+
+        // Q2d: Height, Physical Stats & Zodiac Sign
+        if ($person->height || $person->zodiac_sign) {
+            $heightText = $person->height ? " stands at a height of {$person->height}" : "";
+            $zodiacText = $person->zodiac_sign ? "with the astrological zodiac sign of {$person->zodiac_sign}" : "";
+            $connector = ($person->height && $person->zodiac_sign) ? " and is associated " : ($person->height ? "" : "is associated ");
+            $faqs[] = [
+                'question' => "What is {$person->name}'s height and zodiac sign?",
+                'answer' => "{$person->name}{$heightText}{$connector}{$zodiacText}. Their documented physical profile and astrological attributes are part of their verified talent dossier on TonightOnScreen.",
+            ];
+        }
+
+        // Q2e: Education, College & Academic Qualifications
+        if ($person->education || $person->qualification) {
+            $eduText = $person->education ? " attended {$person->education}" : "";
+            $qualText = $person->qualification ? " where they pursued {$person->qualification}" : "";
+            $faqs[] = [
+                'question' => "Where was {$person->name} educated and what are their qualifications?",
+                'answer' => "{$person->name}{$eduText}{$qualText}. This academic and dramatic formation helped shape their professional craft across cinema and television.",
+            ];
+        }
+
+        // Q2f: Current Residence & Hometown
+        if ($person->residence || $person->hometown) {
+            $resText = $person->residence ? " currently resides in {$person->residence}" : "";
+            $homeText = $person->hometown ? ", having grown up in their native hometown of {$person->hometown}" : "";
+            $faqs[] = [
+                'question' => "Where does {$person->name} live and what is their hometown?",
+                'answer' => "{$person->name}{$resText}{$homeText}. Their geographic roots continue to connect with audiences worldwide through their acclaimed performances.",
+            ];
+        }
+
+        // Q2g: Spoken Languages, Hobbies & Polymath Talents
+        if ($person->languages || $person->hobbies || $person->other_talents) {
+            $langText = $person->languages ? " is multilingual, speaking {$person->languages}" : "";
+            $hobbyText = $person->hobbies ? ". In their personal time, their hobbies include {$person->hobbies}" : "";
+            $talentText = $person->other_talents ? ", complemented by creative talents in {$person->other_talents}" : "";
+            $faqs[] = [
+                'question' => "What languages does {$person->name} speak, and what are their hobbies and other talents?",
+                'answer' => "{$person->name}{$langText}{$talentText}{$hobbyText}.",
             ];
         }
 

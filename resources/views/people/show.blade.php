@@ -7,6 +7,22 @@
         default => $person->known_for_department ?: 'Artist',
     };
 
+    $zodiacMap = [
+        'Aries' => ['glyph' => '♈', 'element' => 'Fire', 'trait' => 'Pioneering & Dynamic', 'badge' => 'text-red-400 bg-red-950/60 border-red-500/30'],
+        'Taurus' => ['glyph' => '♉', 'element' => 'Earth', 'trait' => 'Steadfast & Artful', 'badge' => 'text-emerald-400 bg-emerald-950/60 border-emerald-500/30'],
+        'Gemini' => ['glyph' => '♊', 'element' => 'Air', 'trait' => 'Expressive & Adaptable', 'badge' => 'text-amber-400 bg-amber-950/60 border-amber-500/30'],
+        'Cancer' => ['glyph' => '♋', 'element' => 'Water', 'trait' => 'Intuitive & Empathetic', 'badge' => 'text-cyan-400 bg-cyan-950/60 border-cyan-500/30'],
+        'Leo' => ['glyph' => '♌', 'element' => 'Fire', 'trait' => 'Charismatic & Bold', 'badge' => 'text-orange-400 bg-orange-950/60 border-orange-500/30'],
+        'Virgo' => ['glyph' => '♍', 'element' => 'Earth', 'trait' => 'Analytical & Precise', 'badge' => 'text-emerald-400 bg-emerald-950/60 border-emerald-500/30'],
+        'Libra' => ['glyph' => '♎', 'element' => 'Air', 'trait' => 'Harmonious & Gracious', 'badge' => 'text-blue-400 bg-blue-950/60 border-blue-500/30'],
+        'Scorpio' => ['glyph' => '♏', 'element' => 'Water', 'trait' => 'Passionate & Intense', 'badge' => 'text-purple-400 bg-purple-950/60 border-purple-500/30'],
+        'Sagittarius' => ['glyph' => '♐', 'element' => 'Fire', 'trait' => 'Visionary & Philosophical', 'badge' => 'text-red-400 bg-red-950/60 border-red-500/30'],
+        'Capricorn' => ['glyph' => '♑', 'element' => 'Earth', 'trait' => 'Disciplined & Ambitious', 'badge' => 'text-indigo-400 bg-indigo-950/60 border-indigo-500/30'],
+        'Aquarius' => ['glyph' => '♒', 'element' => 'Air', 'trait' => 'Original & Progressive', 'badge' => 'text-sky-400 bg-sky-950/60 border-sky-500/30'],
+        'Pisces' => ['glyph' => '♓', 'element' => 'Water', 'trait' => 'Imaginative & Sensitive', 'badge' => 'text-teal-400 bg-teal-950/60 border-teal-500/30'],
+    ];
+    $zodiacInfo = $person->zodiac_sign ? ($zodiacMap[$person->zodiac_sign] ?? ['glyph' => '✨', 'element' => 'Cosmic', 'trait' => 'Distinguished Talent', 'badge' => 'text-amber-400 bg-amber-950/60 border-amber-500/30']) : null;
+
     // Determine default active tab
     $defaultTab = 'acting';
     if ($acting->isEmpty()) {
@@ -23,11 +39,22 @@
         'name' => $person->name,
         'url' => route('person.show', $person->slug),
     ];
+    if ($person->full_name && $person->full_name !== $person->name) {
+        $personSchema['alternateName'] = $person->full_name;
+    }
+    if ($person->stage_name) {
+        $personSchema['additionalName'] = $person->stage_name;
+    }
     if ($person->photo_url) {
         $personSchema['image'] = $person->photo_url;
     }
     if ($person->known_for_department) {
         $personSchema['jobTitle'] = $person->known_for_department;
+        $personSchema['hasOccupation'] = [
+            '@type' => 'Occupation',
+            'name' => $person->known_for_department,
+            'description' => $person->qualification ?: $primaryRole,
+        ];
     }
     if ($person->birth_date) {
         $personSchema['birthDate'] = $person->birth_date->format('Y-m-d');
@@ -37,6 +64,30 @@
             '@type' => 'Place',
             'name' => $person->birth_place,
         ];
+    }
+    if ($person->residence) {
+        $personSchema['homeLocation'] = [
+            '@type' => 'Place',
+            'name' => $person->residence,
+        ];
+    }
+    if ($person->nationality) {
+        $personSchema['nationality'] = [
+            '@type' => 'Country',
+            'name' => $person->nationality,
+        ];
+    }
+    if ($person->height) {
+        $personSchema['height'] = $person->height;
+    }
+    if ($person->education) {
+        $personSchema['alumniOf'] = [
+            '@type' => 'EducationalOrganization',
+            'name' => $person->education,
+        ];
+    }
+    if ($person->languages) {
+        $personSchema['knowsLanguage'] = array_map('trim', explode(',', $person->languages));
     }
     if ($person->biography) {
         $personSchema['description'] = strip_tags($person->biography);
@@ -124,127 +175,126 @@
                         </div>
                     </div>
 
-                    <!-- Personal Information Quick Card -->
-                    <div class="mt-5 sm:mt-6 bg-white/5 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/10 space-y-3.5 text-xs">
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block pb-1 border-b border-white/10">Personal Dossier</span>
+                    <!-- Personal Information Quick Card (Glassmorphic VIP Badge) -->
+                    <div class="mt-5 sm:mt-6 bg-slate-900/90 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/10 space-y-3.5 text-xs shadow-xl">
+                        <div class="flex items-center justify-between pb-2 border-b border-white/10">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Quick Profile Dossier</span>
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-400/10 text-amber-400 border border-amber-400/20">Verified</span>
+                        </div>
 
                         @if($person->full_name && $person->full_name !== $person->name)
                             <div>
-                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Full / Birth Name</span>
-                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->full_name }}</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Full / Legal Name</span>
+                                <span class="text-white font-bold text-xs sm:text-sm block">{{ $person->full_name }}</span>
                             </div>
                         @endif
 
                         @if($person->stage_name)
                             <div>
-                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Popular / Stage Name</span>
-                                <span class="text-amber-400 font-semibold text-xs sm:text-sm">{{ $person->stage_name }}</span>
-                            </div>
-                        @endif
-
-                        @if($person->birth_date)
-                            <div>
-                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Date of Birth</span>
-                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">
-                                    {{ $person->birth_date->format('F d, Y') }}
-                                    @if($person->age)
-                                        <span class="text-slate-400 font-normal">({{ $person->age }} years old)</span>
-                                    @endif
-                                </span>
-                            </div>
-                        @endif
-
-                        @if($person->zodiac_sign)
-                            <div>
-                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Zodiac Sign</span>
-                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->zodiac_sign }}</span>
-                            </div>
-                        @endif
-
-                        @if($person->birth_place)
-                            <div>
-                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Birthplace</span>
-                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->birth_place }}</span>
-                            </div>
-                        @endif
-
-                        @if($person->hometown)
-                            <div>
-                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Hometown</span>
-                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->hometown }}</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Popular / Screen Name</span>
+                                <span class="text-amber-400 font-bold text-xs sm:text-sm block">{{ $person->stage_name }}</span>
                             </div>
                         @endif
 
                         @if($person->nationality)
                             <div>
-                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Nationality</span>
-                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->nationality }}</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Nationality & Industry</span>
+                                <a 
+                                    href="{{ route('person.index', ['industry' => ($person->isIndian() ? 'bollywood' : 'hollywood')]) }}" 
+                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/10 hover:bg-amber-400/20 text-slate-200 hover:text-amber-300 font-semibold text-xs transition-colors border border-white/10"
+                                    title="View all {{ $person->nationality }} talents on TonightOnScreen"
+                                >
+                                    <span>🌐</span>
+                                    <span>{{ $person->nationality }}</span>
+                                    <span class="text-[10px] text-amber-400">↗</span>
+                                </a>
                             </div>
                         @endif
 
-                        @if($person->residence)
+                        @if($person->birth_date)
                             <div>
-                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Residence</span>
-                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->residence }}</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Born & Current Age</span>
+                                <div class="text-slate-200 font-medium text-xs sm:text-sm flex items-center gap-1.5 flex-wrap">
+                                    <span>{{ $person->birth_date->format('M d, Y') }}</span>
+                                    @if($person->age)
+                                        <span class="px-1.5 py-0.5 rounded bg-white/10 text-amber-300 font-bold text-[11px]">
+                                            {{ $person->age }} yrs
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
+
+                        @if($person->zodiac_sign)
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Astrological Zodiac</span>
+                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg {{ $zodiacInfo['badge'] ?? 'bg-white/10 text-slate-200' }} border text-xs font-bold">
+                                    <span>{{ $zodiacInfo['glyph'] ?? '✨' }}</span>
+                                    <span>{{ $person->zodiac_sign }}</span>
+                                    @if(isset($zodiacInfo['element']))
+                                        <span class="text-[10px] opacity-75">({{ $zodiacInfo['element'] }})</span>
+                                    @endif
+                                </div>
                             </div>
                         @endif
 
                         @if($person->height)
                             <div>
-                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Height</span>
-                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->height }}</span>
-                            </div>
-                        @endif
-
-                        <div>
-                            <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Profession</span>
-                            <span class="text-amber-400 font-semibold text-xs sm:text-sm">{{ $person->known_for_department ?: 'Cinematic Production' }}</span>
-                        </div>
-
-                        @if($person->languages)
-                            <div>
-                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Languages</span>
-                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->languages }}</span>
-                            </div>
-                        @endif
-
-                        @if($person->education || $person->qualification)
-                            <div>
-                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Education & Qualification</span>
-                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">
-                                    {{ $person->qualification ?: $person->education }}
-                                    @if($person->qualification && $person->education && $person->qualification !== $person->education)
-                                        <span class="text-slate-400 font-normal">({{ $person->education }})</span>
-                                    @endif
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Physical Height</span>
+                                <span class="text-slate-200 font-semibold text-xs sm:text-sm flex items-center gap-1.5">
+                                    <span>📏</span>
+                                    <span>{{ $person->height }}</span>
                                 </span>
                             </div>
                         @endif
 
-                        @if($person->religion)
+                        @if($person->birth_place || $person->hometown)
                             <div>
-                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Religion</span>
-                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->religion }}</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Roots & Origin</span>
+                                <span class="text-slate-200 font-medium text-xs flex items-center gap-1.5">
+                                    <span>📍</span>
+                                    <span>{{ $person->birth_place ?: $person->hometown }}</span>
+                                </span>
                             </div>
                         @endif
 
-                        @if($person->hobbies)
+                        @if($person->residence)
                             <div>
-                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Hobbies</span>
-                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->hobbies }}</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Current Residence</span>
+                                <span class="text-slate-200 font-medium text-xs flex items-center gap-1.5">
+                                    <span>🏡</span>
+                                    <span>{{ $person->residence }}</span>
+                                </span>
                             </div>
                         @endif
 
-                        @if($person->other_talents)
-                            <div>
-                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Other Talents</span>
-                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->other_talents }}</span>
-                            </div>
-                        @endif
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Primary Department</span>
+                            <a 
+                                href="{{ route('person.index', ['department' => $person->known_for_department]) }}" 
+                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 font-bold text-xs transition-colors border border-amber-400/30"
+                                title="Explore {{ $person->known_for_department }} talent directory"
+                            >
+                                <span>🎬</span>
+                                <span>{{ $person->known_for_department ?: 'Cinematic Production' }}</span>
+                                <span class="text-[10px]">↗</span>
+                            </a>
+                        </div>
 
-                        @if($person->gender)
+                        @if($person->languages)
                             <div>
-                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Gender</span>
-                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->gender }}</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1.5">Spoken Languages</span>
+                                <div class="flex flex-wrap gap-1">
+                                    @foreach(array_map('trim', explode(',', $person->languages)) as $lang)
+                                        <a 
+                                            href="{{ route('explore', ['q' => $lang]) }}" 
+                                            class="px-2 py-0.5 rounded-md bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white text-[11px] font-medium transition-colors border border-white/5"
+                                            title="Search {{ $lang }} cinema titles"
+                                        >
+                                            {{ $lang }}
+                                        </a>
+                                    @endforeach
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -264,6 +314,9 @@
                         </h1>
 
                         <p class="text-sm sm:text-base font-medium text-amber-300/90 mt-1.5">
+                            @if($person->stage_name && $person->stage_name !== $person->name)
+                                Popularly known as <strong class="text-white">{{ $person->stage_name }}</strong> • 
+                            @endif
                             Celebrated for {{ $primaryRole }} & Distinctive Filmmaking
                         </p>
                     </div>
@@ -280,7 +333,13 @@
                         </div>
                         <div class="bg-white/5 border border-white/10 p-4 rounded-2xl">
                             <span class="text-[11px] text-slate-400 block font-medium mb-1">Lead Genre</span>
-                            <span class="text-xl sm:text-2xl font-black text-white truncate block">{{ $stats['topGenre'] }}</span>
+                            <a 
+                                href="{{ route('genre.show', \Illuminate\Support\Str::slug($stats['topGenre'])) }}" 
+                                class="text-xl sm:text-2xl font-black text-white hover:text-amber-400 transition-colors truncate block"
+                                title="Explore top {{ $stats['topGenre'] }} movies"
+                            >
+                                {{ $stats['topGenre'] }}
+                            </a>
                         </div>
                         <div class="bg-white/5 border border-white/10 p-4 rounded-2xl">
                             <span class="text-[11px] text-slate-400 block font-medium mb-1">Career Span</span>
@@ -334,7 +393,276 @@
         </div>
     </div>
 
-    <!-- 2. Programmatic Fast Facts & Quick Answers (Google SERP Snippets: Birth Place, Debut Movie, Hit Movies, Total Movies) -->
+    <!-- 2. BRAND NEW: Comprehensive Personal & Career Dossier (Rich Aesthetics & SEO Entity Link Hub) -->
+    <section id="personal-dossier" class="py-12 sm:py-16 bg-[#020938] text-white border-b border-[#0d163f] relative overflow-hidden">
+        <!-- Ambient Radial Glows -->
+        <div class="absolute -top-24 right-1/3 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 left-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <!-- Section Header -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 sm:mb-10 pb-6 border-b border-white/10">
+                <div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-400 text-xs font-bold mb-2.5">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5zm4 4h-2v-2h2v2zm0-4h-2V7h2v5z"/>
+                        </svg>
+                        <span>Verified Personal Dossier</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
+                        {{ $person->name }}: Personal Life, Background & Life Dossier
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-300 mt-1.5 max-w-2xl leading-relaxed">
+                        Comprehensive personal background, birth origin, physical traits, academic qualifications, multilingual fluency, and polymath creative pursuits of {{ $person->name }}.
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-semibold text-slate-300">
+                        Profile Verified • {{ $stats['careerSpan'] }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- The 4 Rich Dossier Thematic Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+                
+                <!-- Card 1: Official Identity & Heritage -->
+                <div class="bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-md rounded-2xl p-5 sm:p-6 border border-white/10 hover:border-amber-400/40 transition-all flex flex-col justify-between shadow-lg">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 rounded-xl bg-amber-400/15 text-amber-400 flex items-center justify-center font-bold text-lg border border-amber-400/30">
+                                🪪
+                            </div>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Card 01</span>
+                        </div>
+                        <h3 class="text-base font-black text-white mb-1">Official Identity & Heritage</h3>
+                        <p class="text-xs text-slate-400 mb-4 pb-3 border-b border-white/10">Verified screen name, citizenship & origins</p>
+
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <span class="text-[11px] font-medium text-slate-400 block">Full / Legal Name</span>
+                                <span class="text-white font-bold text-sm">{{ $person->full_name ?: $person->name }}</span>
+                            </div>
+
+                            @if($person->stage_name)
+                                <div>
+                                    <span class="text-[11px] font-medium text-slate-400 block">Popular Screen Moniker</span>
+                                    <span class="text-amber-400 font-bold text-sm">{{ $person->stage_name }}</span>
+                                </div>
+                            @endif
+
+                            <div>
+                                <span class="text-[11px] font-medium text-slate-400 block mb-1">Nationality</span>
+                                <a 
+                                    href="{{ route('person.index', ['industry' => ($person->isIndian() ? 'bollywood' : 'hollywood')]) }}" 
+                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 font-bold text-xs transition-colors border border-amber-400/20"
+                                >
+                                    <span>🌐</span>
+                                    <span>{{ $person->nationality ?: ($person->isIndian() ? 'Indian' : 'American / International') }}</span>
+                                    <span class="text-[10px]">↗</span>
+                                </a>
+                            </div>
+
+                            <div>
+                                <span class="text-[11px] font-medium text-slate-400 block">Place of Birth</span>
+                                <span class="text-slate-200 font-medium">{{ $person->birth_place ?: 'Global Cinema' }}</span>
+                            </div>
+
+                            @if($person->hometown)
+                                <div>
+                                    <span class="text-[11px] font-medium text-slate-400 block">Native Hometown</span>
+                                    <span class="text-slate-200 font-medium">{{ $person->hometown }}</span>
+                                </div>
+                            @endif
+
+                            @if($person->residence)
+                                <div>
+                                    <span class="text-[11px] font-medium text-slate-400 block">Current Residence</span>
+                                    <span class="text-slate-200 font-medium">{{ $person->residence }}</span>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Physicality, Age & Astrological Profile -->
+                <div class="bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-md rounded-2xl p-5 sm:p-6 border border-white/10 hover:border-amber-400/40 transition-all flex flex-col justify-between shadow-lg">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 rounded-xl bg-purple-400/15 text-purple-400 flex items-center justify-center font-bold text-lg border border-purple-400/30">
+                                ⭐
+                            </div>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Card 02</span>
+                        </div>
+                        <h3 class="text-base font-black text-white mb-1">Physicality & Astrology</h3>
+                        <p class="text-xs text-slate-400 mb-4 pb-3 border-b border-white/10">Vital statistics, birth timeline & zodiac</p>
+
+                        <div class="space-y-3 text-xs">
+                            @if($person->birth_date)
+                                <div>
+                                    <span class="text-[11px] font-medium text-slate-400 block">Date of Birth</span>
+                                    <span class="text-white font-bold text-sm">{{ $person->birth_date->format('F d, Y') }}</span>
+                                </div>
+
+                                <div>
+                                    <span class="text-[11px] font-medium text-slate-400 block mb-1">Calculated Age</span>
+                                    <div class="inline-flex items-center gap-2">
+                                        <span class="text-amber-400 font-extrabold text-base">{{ $person->age }} Years Old</span>
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Active</span>
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if($person->zodiac_sign)
+                                <div>
+                                    <span class="text-[11px] font-medium text-slate-400 block mb-1">Zodiac Sign & Astrology</span>
+                                    <div class="p-2 rounded-xl bg-white/5 border border-white/10">
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-extrabold text-white text-xs sm:text-sm flex items-center gap-1.5">
+                                                <span>{{ $zodiacInfo['glyph'] ?? '✨' }}</span>
+                                                <span>{{ $person->zodiac_sign }}</span>
+                                            </span>
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold {{ $zodiacInfo['badge'] ?? 'bg-white/10 text-slate-300' }} border">
+                                                {{ $zodiacInfo['element'] ?? 'Cosmic' }} Element
+                                            </span>
+                                        </div>
+                                        <span class="text-[10px] text-slate-400 block mt-1 italic">{{ $zodiacInfo['trait'] ?? 'Celebrated cinematic personality' }}</span>
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if($person->height)
+                                <div>
+                                    <span class="text-[11px] font-medium text-slate-400 block">Height (Stature)</span>
+                                    <span class="text-white font-extrabold text-sm flex items-center gap-1.5">
+                                        <span>📏</span>
+                                        <span>{{ $person->height }}</span>
+                                    </span>
+                                </div>
+                            @endif
+
+                            <div>
+                                <span class="text-[11px] font-medium text-slate-400 block mb-1">Gender & Core Role</span>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="text-slate-200 font-medium">{{ $person->gender ?: 'Documented' }}</span>
+                                    <span class="text-slate-500">•</span>
+                                    <a 
+                                        href="{{ route('person.index', ['department' => $person->known_for_department]) }}"
+                                        class="text-amber-400 hover:text-amber-300 font-semibold"
+                                    >
+                                        {{ $person->known_for_department ?: 'Cinema Artist' }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Academia, Qualifications & Languages -->
+                <div class="bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-md rounded-2xl p-5 sm:p-6 border border-white/10 hover:border-amber-400/40 transition-all flex flex-col justify-between shadow-lg">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 rounded-xl bg-blue-400/15 text-blue-400 flex items-center justify-center font-bold text-lg border border-blue-400/30">
+                                🎓
+                            </div>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Card 03</span>
+                        </div>
+                        <h3 class="text-base font-black text-white mb-1">Academia & Languages</h3>
+                        <p class="text-xs text-slate-400 mb-4 pb-3 border-b border-white/10">Alma mater, formal credentials & fluency</p>
+
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <span class="text-[11px] font-medium text-slate-400 block">Alma Mater / Institutions</span>
+                                <span class="text-white font-bold text-xs sm:text-sm block leading-snug">
+                                    {{ $person->education ?: 'Professional Theater & Dramatic Academy' }}
+                                </span>
+                            </div>
+
+                            @if($person->qualification)
+                                <div>
+                                    <span class="text-[11px] font-medium text-slate-400 block">Highest Qualification</span>
+                                    <span class="text-amber-400 font-semibold text-xs block leading-snug">
+                                        {{ $person->qualification }}
+                                    </span>
+                                </div>
+                            @endif
+
+                            <div>
+                                <span class="text-[11px] font-medium text-slate-400 block mb-1.5">Languages Mastered</span>
+                                <div class="flex flex-wrap gap-1.5">
+                                    @foreach(array_map('trim', explode(',', $person->languages ?: 'English')) as $lang)
+                                        <a 
+                                            href="{{ route('explore', ['q' => $lang]) }}" 
+                                            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-500/15 hover:bg-blue-500/25 text-blue-300 font-semibold text-xs transition-colors border border-blue-400/20"
+                                            title="Search {{ $lang }} films on TonightOnScreen"
+                                        >
+                                            <span>🗣️</span>
+                                            <span>{{ $lang }}</span>
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Polymath Talents & Lifestyle Pursuits -->
+                <div class="bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-md rounded-2xl p-5 sm:p-6 border border-white/10 hover:border-amber-400/40 transition-all flex flex-col justify-between shadow-lg">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-400/15 text-emerald-400 flex items-center justify-center font-bold text-lg border border-emerald-400/30">
+                                🎨
+                            </div>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Card 04</span>
+                        </div>
+                        <h3 class="text-base font-black text-white mb-1">Talents & Lifestyle</h3>
+                        <p class="text-xs text-slate-400 mb-4 pb-3 border-b border-white/10">Auxiliary skills, hobbies & worldview</p>
+
+                        <div class="space-y-3.5 text-xs">
+                            @if($person->other_talents)
+                                <div>
+                                    <span class="text-[11px] font-medium text-slate-400 block mb-1.5">Auxiliary Creative Talents</span>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        @foreach(array_map('trim', explode(',', $person->other_talents)) as $talent)
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-500/15 text-purple-300 font-semibold text-xs border border-purple-400/20">
+                                                <span>✨</span>
+                                                <span>{{ $talent }}</span>
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if($person->hobbies)
+                                <div>
+                                    <span class="text-[11px] font-medium text-slate-400 block mb-1.5">Hobbies & Interests</span>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        @foreach(array_map('trim', explode(',', $person->hobbies)) as $hobby)
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/10 text-slate-200 font-medium text-xs border border-white/10">
+                                                <span>🎯</span>
+                                                <span>{{ $hobby }}</span>
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if($person->religion)
+                                <div>
+                                    <span class="text-[11px] font-medium text-slate-400 block">Faith / Worldview</span>
+                                    <span class="text-slate-300 font-medium">{{ $person->religion }}</span>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Programmatic Fast Facts & Quick Answers (Google SERP Snippets with Rich Internal Links) -->
     <section id="fast-facts" class="py-10 sm:py-12 bg-white border-b border-slate-200/80 scroll-mt-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
@@ -388,8 +716,8 @@
                         </span>
                         <h3 class="text-sm font-extrabold text-slate-900 leading-snug truncate">
                             @if($stats['debutTitle'])
-                                <a href="{{ route('title.show', $stats['debutTitle']->slug) }}" class="hover:text-amber-600 transition-colors">
-                                    {{ $stats['debutTitle']->title }}
+                                <a href="{{ route('title.show', $stats['debutTitle']->slug) }}" class="text-purple-700 hover:text-amber-600 font-extrabold transition-colors">
+                                    {{ $stats['debutTitle']->title }} ↗
                                 </a>
                             @else
                                 Signature Debut
@@ -397,7 +725,12 @@
                         </h3>
                     </div>
                     <p class="text-xs text-slate-600 mt-3 pt-3 border-t border-slate-200/70 leading-relaxed">
-                        What was {{ $person->name }}'s debut movie? Their earliest cataloged film was <strong class="text-slate-900">{{ $stats['debutTitle']?->title ?? 'their breakthrough title' }}</strong>{{ $stats['debutTitle']?->release_date ? ' (' . $stats['debutTitle']->release_date->format('Y') . ')' : '' }}.
+                        What was {{ $person->name }}'s debut movie? Their earliest cataloged film was 
+                        @if($stats['debutTitle'])
+                            <a href="{{ route('title.show', $stats['debutTitle']->slug) }}" class="font-bold text-slate-900 hover:text-amber-600 underline decoration-amber-400/50">{{ $stats['debutTitle']->title }}</a>{{ $stats['debutTitle']->release_date ? ' (' . $stats['debutTitle']->release_date->format('Y') . ')' : '' }}
+                        @else
+                            <strong class="text-slate-900">their breakthrough title</strong>
+                        @endif.
                     </p>
                 </div>
 
@@ -413,11 +746,20 @@
                             Hit Movies & Top Works
                         </span>
                         <h3 class="text-sm font-extrabold text-slate-900 leading-snug truncate">
-                            {{ $stats['highestRatedTitle']?->title ?? 'Cinema Classic' }}
+                            @if($stats['highestRatedTitle'])
+                                <a href="{{ route('title.show', $stats['highestRatedTitle']->slug) }}" class="text-emerald-700 hover:text-amber-600 font-extrabold transition-colors">
+                                    {{ $stats['highestRatedTitle']->title }} ↗
+                                </a>
+                            @else
+                                Cinema Classic
+                            @endif
                         </h3>
                     </div>
                     <p class="text-xs text-slate-600 mt-3 pt-3 border-t border-slate-200/70 leading-relaxed">
-                        What are {{ $person->name }}'s hit movies? Top-rated masterpieces include <strong class="text-slate-900">{{ $stats['hitMovies']->take(3)->pluck('title')->implode(', ') }}</strong>.
+                        What are {{ $person->name }}'s hit movies? Top-rated masterpieces include 
+                        @foreach($stats['hitMovies']->take(3) as $hIndex => $hTitle)
+                            <a href="{{ route('title.show', $hTitle->slug) }}" class="font-bold text-slate-900 hover:text-amber-600 underline decoration-emerald-500/30">{{ $hTitle->title }}</a>{{ $loop->last ? '.' : ', ' }}
+                        @endforeach
                     </p>
                 </div>
 
@@ -433,7 +775,9 @@
                             Total Movies Count
                         </span>
                         <h3 class="text-sm font-extrabold text-slate-900 leading-snug">
-                            {{ $stats['totalCredits'] }} Total Credits
+                            <a href="#filmography" class="text-blue-700 hover:text-amber-600 transition-colors">
+                                {{ $stats['totalCredits'] }} Total Credits ↓
+                            </a>
                         </h3>
                     </div>
                     <p class="text-xs text-slate-600 mt-3 pt-3 border-t border-slate-200/70 leading-relaxed">
@@ -445,7 +789,80 @@
         </div>
     </section>
 
-    <!-- 3. Filmography Explorer & Visual Career Timeline -->
+    <!-- 4. BRAND NEW: Frequent Co-Stars & Creative Collaborators (Entity Co-occurrence & SEO Link Multiplier) -->
+    @if(isset($collaborators) && $collaborators->isNotEmpty())
+        <section id="collaborators" class="py-12 sm:py-16 bg-[#f8fafc] border-b border-slate-200/80 scroll-mt-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Section Header -->
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 text-xs font-bold mb-2">
+                            <svg class="w-3.5 h-3.5 fill-current text-amber-500" viewBox="0 0 24 24">
+                                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                            </svg>
+                            <span>Creative Network & Co-Stars</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+                            Frequent Co-Stars & Creative Collaborators
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1 max-w-xl">
+                            Acclaimed filmmakers, co-stars, and key creatives who frequently collaborate with {{ $person->name }} across landmark titles.
+                        </p>
+                    </div>
+
+                    <a 
+                        href="{{ route('person.index') }}" 
+                        class="inline-flex items-center gap-1.5 text-xs font-bold text-amber-600 hover:text-amber-700 transition-colors shrink-0"
+                    >
+                        <span>Browse All Industry Talents</span>
+                        <span>→</span>
+                    </a>
+                </div>
+
+                <!-- Collaborator Cards Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5">
+                    @foreach($collaborators as $collab)
+                        <a 
+                            href="{{ route('person.show', $collab->slug) }}" 
+                            class="group bg-white hover:bg-slate-50 rounded-2xl p-4 border border-slate-200/80 hover:border-amber-400/50 shadow-xs hover:shadow-md transition-all flex flex-col items-center text-center card-shadow-hover"
+                        >
+                            <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden mb-3 bg-slate-900 border-2 border-white shadow-sm group-hover:scale-105 transition-transform duration-300">
+                                @if($collab->photo_url)
+                                    <img src="{{ $collab->photo_url }}" alt="{{ $collab->name }}" class="w-full h-full object-cover" loading="lazy">
+                                @else
+                                    <div class="w-full h-full flex items-center justify-center bg-slate-800 text-slate-400 text-xs font-bold">
+                                        {{ Str::limit($collab->name, 2, '') }}
+                                    </div>
+                                @endif
+                            </div>
+
+                            <h3 class="text-xs sm:text-sm font-extrabold text-slate-900 group-hover:text-amber-600 transition-colors line-clamp-1">
+                                {{ $collab->name }}
+                            </h3>
+
+                            <span class="text-[10px] font-semibold text-slate-500 block mt-0.5">
+                                {{ $collab->known_for_department ?: 'Cinema Artist' }}
+                            </span>
+
+                            <div class="mt-2.5">
+                                @if(!empty($collab->shared_count) && $collab->shared_count > 0)
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                                        ★ {{ $collab->shared_count }} {{ Str::plural('Project', $collab->shared_count) }}
+                                    </span>
+                                @else
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">
+                                        Industry Peer
+                                    </span>
+                                @endif
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
+    <!-- 5. Filmography Explorer & Visual Career Timeline -->
     <section 
         id="filmography" 
         class="py-12 sm:py-16 bg-[#f8fafc] min-h-[600px] border-t border-slate-200/80 scroll-mt-6 relative" 
@@ -969,7 +1386,7 @@
         </div>
     </section>
 
-    <!-- 4. Frequently Asked Questions (FAQ) Section -->
+    <!-- 6. Frequently Asked Questions (FAQ) Section -->
     @if(!empty($faqs))
         <section id="faqs" class="py-16 bg-[#f8fafc] border-t border-slate-200/80 scroll-mt-6">
             <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">

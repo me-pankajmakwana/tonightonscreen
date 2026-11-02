@@ -16,6 +16,7 @@ class Person extends Model
 
     protected $fillable = [
         'name',
+        'full_name',
         'stage_name',
         'slug',
         'gender',
@@ -23,6 +24,17 @@ class Person extends Model
         'birth_date',
         'death_date',
         'birth_place',
+        'nationality',
+        'residence',
+        'hometown',
+        'height',
+        'languages',
+        'education',
+        'qualification',
+        'religion',
+        'zodiac_sign',
+        'hobbies',
+        'other_talents',
         'biography',
         'photo_path',
         'social_links',
@@ -147,4 +159,46 @@ class Person extends Model
     {
         return $this->isIndian();
     }
+
+    /**
+     * Get or calculate Zodiac sign from birth date if not explicitly set.
+     */
+    public function getZodiacSignAttribute(?string $value): ?string
+    {
+        if (!empty($value)) {
+            return $value;
+        }
+
+        if (!$this->birth_date) {
+            return null;
+        }
+
+        $month = (int) $this->birth_date->format('n');
+        $day   = (int) $this->birth_date->format('j');
+
+        return match ($month) {
+            1  => $day <= 19 ? 'Capricorn' : 'Aquarius',
+            2  => $day <= 18 ? 'Aquarius' : 'Pisces',
+            3  => $day <= 20 ? 'Pisces' : 'Aries',
+            4  => $day <= 19 ? 'Aries' : 'Taurus',
+            5  => $day <= 20 ? 'Taurus' : 'Gemini',
+            6  => $day <= 20 ? 'Gemini' : 'Cancer',
+            7  => $day <= 22 ? 'Cancer' : 'Leo',
+            8  => $day <= 22 ? 'Leo' : 'Virgo',
+            9  => $day <= 22 ? 'Virgo' : 'Libra',
+            10 => $day <= 22 ? 'Libra' : 'Scorpio',
+            11 => $day <= 21 ? 'Scorpio' : 'Sagittarius',
+            12 => $day <= 21 ? 'Sagittarius' : 'Capricorn',
+            default => null,
+        };
+    }
+
+    /**
+     * Get popular name (stage name fallback to name).
+     */
+    public function getPopularNameAttribute(): string
+    {
+        return $this->stage_name ?: $this->name;
+    }
 }
+

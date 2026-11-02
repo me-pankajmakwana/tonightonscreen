@@ -128,15 +128,36 @@
                     <div class="mt-5 sm:mt-6 bg-white/5 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/10 space-y-3.5 text-xs">
                         <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block pb-1 border-b border-white/10">Personal Dossier</span>
 
+                        @if($person->full_name && $person->full_name !== $person->name)
+                            <div>
+                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Full / Birth Name</span>
+                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->full_name }}</span>
+                            </div>
+                        @endif
+
+                        @if($person->stage_name)
+                            <div>
+                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Popular / Stage Name</span>
+                                <span class="text-amber-400 font-semibold text-xs sm:text-sm">{{ $person->stage_name }}</span>
+                            </div>
+                        @endif
+
                         @if($person->birth_date)
                             <div>
-                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Born</span>
+                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Date of Birth</span>
                                 <span class="text-slate-200 font-semibold text-xs sm:text-sm">
                                     {{ $person->birth_date->format('F d, Y') }}
                                     @if($person->age)
                                         <span class="text-slate-400 font-normal">({{ $person->age }} years old)</span>
                                     @endif
                                 </span>
+                            </div>
+                        @endif
+
+                        @if($person->zodiac_sign)
+                            <div>
+                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Zodiac Sign</span>
+                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->zodiac_sign }}</span>
                             </div>
                         @endif
 
@@ -147,17 +168,85 @@
                             </div>
                         @endif
 
+                        @if($person->hometown)
+                            <div>
+                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Hometown</span>
+                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->hometown }}</span>
+                            </div>
+                        @endif
+
+                        @if($person->nationality)
+                            <div>
+                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Nationality</span>
+                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->nationality }}</span>
+                            </div>
+                        @endif
+
+                        @if($person->residence)
+                            <div>
+                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Residence</span>
+                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->residence }}</span>
+                            </div>
+                        @endif
+
+                        @if($person->height)
+                            <div>
+                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Height</span>
+                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->height }}</span>
+                            </div>
+                        @endif
+
+                        <div>
+                            <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Profession</span>
+                            <span class="text-amber-400 font-semibold text-xs sm:text-sm">{{ $person->known_for_department ?: 'Cinematic Production' }}</span>
+                        </div>
+
+                        @if($person->languages)
+                            <div>
+                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Languages</span>
+                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->languages }}</span>
+                            </div>
+                        @endif
+
+                        @if($person->education || $person->qualification)
+                            <div>
+                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Education & Qualification</span>
+                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">
+                                    {{ $person->qualification ?: $person->education }}
+                                    @if($person->qualification && $person->education && $person->qualification !== $person->education)
+                                        <span class="text-slate-400 font-normal">({{ $person->education }})</span>
+                                    @endif
+                                </span>
+                            </div>
+                        @endif
+
+                        @if($person->religion)
+                            <div>
+                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Religion</span>
+                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->religion }}</span>
+                            </div>
+                        @endif
+
+                        @if($person->hobbies)
+                            <div>
+                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Hobbies</span>
+                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->hobbies }}</span>
+                            </div>
+                        @endif
+
+                        @if($person->other_talents)
+                            <div>
+                                <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Other Talents</span>
+                                <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->other_talents }}</span>
+                            </div>
+                        @endif
+
                         @if($person->gender)
                             <div>
                                 <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Gender</span>
                                 <span class="text-slate-200 font-semibold text-xs sm:text-sm">{{ $person->gender }}</span>
                             </div>
                         @endif
-
-                        <div>
-                            <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Primary Focus</span>
-                            <span class="text-amber-400 font-semibold text-xs sm:text-sm">{{ $person->known_for_department ?: 'Cinematic Production' }}</span>
-                        </div>
                     </div>
                 </div>
 

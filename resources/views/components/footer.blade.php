@@ -41,10 +41,12 @@
                 <h4 class="text-white text-xs font-bold tracking-wider uppercase">Entertainment Hubs</h4>
                 <ul class="space-y-2">
                     <li><a href="{{ route('home') }}" class="hover:text-[#FFA500] transition-colors">Home Discovery</a></li>
+                    <li><a href="{{ route('what-to-watch') }}" class="hover:text-[#FFA500] transition-colors font-bold text-amber-400">✦ What to Watch Tonight</a></li>
+                    <li><a href="{{ route('ott.releases') }}" class="hover:text-[#FFA500] transition-colors font-bold text-rose-400">🔴 OTT Releases Calendar</a></li>
+                    <li><a href="{{ route('box-office') }}" class="hover:text-[#FFA500] transition-colors font-bold text-emerald-400">💰 Box Office & Budgets</a></li>
+                    <li><a href="{{ route('first-movies') }}" class="hover:text-[#FFA500] transition-colors">🌟 First Movies & Debuts</a></li>
                     <li><a href="{{ route('top-rated') }}" class="hover:text-[#FFA500] transition-colors">Top Rated All Time</a></li>
                     <li><a href="{{ route('trending') }}" class="hover:text-[#FFA500] transition-colors">Trending Tonight</a></li>
-                    <li><a href="{{ route('explore', ['type' => 'movie']) }}" class="hover:text-[#FFA500] transition-colors">Explore Movies</a></li>
-                    <li><a href="{{ route('explore', ['type' => 'tv_series']) }}" class="hover:text-[#FFA500] transition-colors">Explore TV Series</a></li>
                     <li><a href="{{ route('platforms.index') }}" class="hover:text-[#FFA500] transition-colors">Streaming Platforms Guide</a></li>
                     <li><a href="{{ route('person.index') }}" class="hover:text-[#FFA500] transition-colors">Actors & Filmmakers</a></li>
                     <li><a href="{{ route('watchlist.index') }}" class="hover:text-[#FFA500] transition-colors">Your Watchlist</a></li>

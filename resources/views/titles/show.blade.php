@@ -288,35 +288,48 @@
 
     <!-- 2. "Where to Watch" Streaming Availability -->
     @if($title->streamingPlatforms->isNotEmpty())
-        <section id="where-to-watch" class="py-8 bg-white border-b border-slate-200/80 scroll-mt-24">
+        <section id="where-to-watch" class="py-8 bg-gradient-to-r from-slate-900 via-[#010629] to-slate-900 text-white border-b border-[#0d163f] scroll-mt-24 shadow-inner">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                     <div>
-                        <span class="text-[11px] font-bold uppercase tracking-widest text-slate-400 block">Streaming Options</span>
-                        <h3 class="text-lg font-extrabold text-slate-900">Where to Watch</h3>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#FFA500]">Verified Streaming Availability</span>
+                        </div>
+                        <h3 class="text-xl font-black text-white">Where to Stream {{ $title->title }}</h3>
+                        <p class="text-xs text-slate-300 mt-0.5">Watch instantly in HD & 4K on official licensed platforms</p>
                     </div>
 
                     <div class="flex flex-wrap items-center gap-3">
                         @foreach($title->streamingPlatforms as $platform)
                             @php
                                 $accessType = ucfirst($platform->pivot->access_type ?? 'Streaming');
+                                $quality = $platform->pivot->quality ?: 'HD';
                                 $watchUrl = $platform->pivot->watch_url ?: $platform->website ?: '#';
                             @endphp
                             <a 
                                 href="{{ $watchUrl }}" 
                                 target="_blank" 
                                 rel="noopener noreferrer" 
-                                class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-all card-shadow-hover group"
+                                class="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-[#FFA500] hover:text-[#010629] border border-white/15 hover:border-[#FFA500] transition-all group shadow-sm active:scale-95"
+                                title="Stream {{ $title->title }} on {{ $platform->name }}"
                             >
-                                <span class="text-xs font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
-                                    {{ $platform->name }}
-                                </span>
-                                <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-200 text-slate-700">
-                                    {{ $accessType }}
-                                </span>
-                                <svg class="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                                </svg>
+                                <div class="flex flex-col">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs font-black tracking-wide text-white group-hover:text-[#010629] transition-colors">
+                                            {{ $platform->name }}
+                                        </span>
+                                        <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase bg-[#FFA500]/20 group-hover:bg-black/20 text-[#FFA500] group-hover:text-[#010629]">
+                                            {{ $quality }}
+                                        </span>
+                                    </div>
+                                    <span class="text-[10px] text-slate-300 group-hover:text-[#010629]/80 font-medium">
+                                        {{ $accessType }}
+                                    </span>
+                                </div>
+                                <div class="w-7 h-7 rounded-xl bg-white/10 group-hover:bg-[#010629] text-white flex items-center justify-center shrink-0 transition-colors">
+                                    <span class="text-xs font-black">↗</span>
+                                </div>
                             </a>
                         @endforeach
                     </div>

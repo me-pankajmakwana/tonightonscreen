@@ -30,15 +30,28 @@
                     </div>
 
                     @if($totalCount > 0)
-                        <form action="{{ route('watchlist.clear') }}" method="POST" onsubmit="return confirm('Are you sure you want to clear your entire watchlist?');">
-                            @csrf
-                            <button type="submit" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-rose-500/20 text-slate-300 hover:text-rose-300 text-xs font-semibold border border-white/10 hover:border-rose-500/30 transition-all cursor-pointer flex items-center gap-2">
-                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                </svg>
-                                <span>Clear Watchlist</span>
-                            </button>
-                        </form>
+                        <div class="flex items-center gap-2.5">
+                            @if(!empty($shareUrl))
+                                <button 
+                                    type="button" 
+                                    onclick="navigator.clipboard.writeText('{{ $shareUrl }}'); alert('Watchlist shareable link copied to clipboard! Share it with friends on WhatsApp or Twitter.');"
+                                    class="px-4 py-2.5 rounded-xl bg-[#FFA500] hover:bg-amber-400 text-[#010629] text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95"
+                                >
+                                    <span>🔗</span>
+                                    <span>Share Watchlist</span>
+                                </button>
+                            @endif
+
+                            <form action="{{ route('watchlist.clear') }}" method="POST" onsubmit="return confirm('Are you sure you want to clear your entire watchlist?');">
+                                @csrf
+                                <button type="submit" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-rose-500/20 text-slate-300 hover:text-rose-300 text-xs font-semibold border border-white/10 hover:border-rose-500/30 transition-all cursor-pointer flex items-center gap-2">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                    <span>Clear Watchlist</span>
+                                </button>
+                            </form>
+                        </div>
                     @endif
                 </div>
 

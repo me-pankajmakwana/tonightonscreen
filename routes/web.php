@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\BoxOfficeController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\DebutController;
 use App\Http\Controllers\ExploreController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OttReleaseController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\PlatformController;
@@ -13,6 +16,7 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\TitleController;
 use App\Http\Controllers\TopRatedController;
 use App\Http\Controllers\WatchlistController;
+use App\Http\Controllers\WhatToWatchController;
 use Illuminate\Support\Facades\Route;
 
 // Primary Discovery & Entertainment Hubs
@@ -20,6 +24,14 @@ Route::get('/', HomeController::class)->name('home');
 Route::get('/explore', ExploreController::class)->name('explore');
 Route::get('/top-rated', [TopRatedController::class, 'index'])->name('top-rated');
 Route::get('/trending', [TopRatedController::class, 'trending'])->name('trending');
+
+// Interactive & High-Intent Discovery Hubs
+Route::get('/what-to-watch', [WhatToWatchController::class, 'index'])->name('what-to-watch');
+Route::get('/api/what-to-watch/recommend', [WhatToWatchController::class, 'recommend'])->name('what-to-watch.recommend');
+Route::get('/ott-releases', [OttReleaseController::class, 'index'])->name('ott.releases');
+Route::get('/box-office', [BoxOfficeController::class, 'index'])->name('box-office');
+Route::get('/first-movies', [DebutController::class, 'index'])->name('first-movies');
+Route::get('/debuts', [DebutController::class, 'index'])->name('debuts'); // Friendly alias
 
 // Streaming Platforms Hub
 Route::get('/platforms', [PlatformController::class, 'index'])->name('platforms.index');
@@ -55,8 +67,12 @@ Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('privacy
 Route::get('/terms', [PageController::class, 'terms'])->name('terms');
 Route::get('/sitemap', [PageController::class, 'sitemapDirectory'])->name('sitemap.directory');
 
-// Technical Search Engine Files
-Route::get('/sitemap.xml', [SitemapController::class, 'sitemap'])->name('sitemap');
+// Technical Search Engine Files & Multi-Sitemap Architecture
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+Route::get('/sitemap-main.xml', [SitemapController::class, 'main'])->name('sitemap.main');
+Route::get('/sitemap-titles.xml', [SitemapController::class, 'titles'])->name('sitemap.titles');
+Route::get('/sitemap-people.xml', [SitemapController::class, 'people'])->name('sitemap.people');
+Route::get('/sitemap-companies.xml', [SitemapController::class, 'companies'])->name('sitemap.companies');
 Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
 
 // Production Webhook Sync Endpoints (Protected by VerifyWebhookSecret)

@@ -15,19 +15,40 @@ class WatchlistController extends Controller
      */
     public function index(Request $request)
     {
-        $watchlistIds = session()->get('watchlist', []);
+        // Support sharing via ?share=slug1,slug2,slug3
+        $shareParam = trim((string) $request->input('share', ''));
+        $isSharedView = false;
+        $sharedSlugs = [];
 
-        $titles = collect();
-        if (! empty($watchlistIds)) {
+        if (!empty($shareParam)) {
+            $sharedSlugs = array_filter(explode(',', $shareParam));
+            $isSharedView = true;
+        }
+
+        if ($isSharedView && !empty($sharedSlugs)) {
             $titles = Title::query()
-                ->whereIn('id', $watchlistIds)
+                ->whereIn('slug', $sharedSlugs)
                 ->with(['genres:id,name,slug', 'streamingPlatforms:id,name,slug'])
                 ->get()
-                // Preserve the order in which items were saved
-                ->sortBy(function ($item) use ($watchlistIds) {
-                    return array_search($item->id, array_reverse($watchlistIds));
+                ->sortBy(function ($item) use ($sharedSlugs) {
+                    return array_search($item->slug, $sharedSlugs);
                 })
                 ->values();
+        } else {
+            $watchlistIds = session()->get('watchlist', []);
+
+            $titles = collect();
+            if (! empty($watchlistIds)) {
+                $titles = Title::query()
+                    ->whereIn('id', $watchlistIds)
+                    ->with(['genres:id,name,slug', 'streamingPlatforms:id,name,slug'])
+                    ->get()
+                    // Preserve the order in which items were saved
+                    ->sortBy(function ($item) use ($watchlistIds) {
+                        return array_search($item->id, array_reverse($watchlistIds));
+                    })
+                    ->values();
+            }
         }
 
         $filter = $request->input('type', 'all');
@@ -50,12 +71,18 @@ class WatchlistController extends Controller
             ($t->type instanceof TitleType ? $t->type === TitleType::TV_SERIES : $t->type === 'tv_series')
         )->count();
 
+        $shareUrl = $titles->isNotEmpty() 
+            ? url('/watchlist') . '?share=' . $titles->pluck('slug')->implode(',') 
+            : null;
+
         return view('watchlist.index', [
             'titles' => $filteredTitles,
             'totalCount' => $titles->count(),
             'movieCount' => $movieCount,
             'seriesCount' => $seriesCount,
             'activeFilter' => $filter,
+            'isSharedView' => $isSharedView,
+            'shareUrl' => $shareUrl,
         ]);
     }
 

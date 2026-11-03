@@ -8,6 +8,9 @@
     <!-- 3. What's Hot Right Now (Trending) -->
     <x-trending-section :trending="$trending" />
 
+    <!-- 3b. Interactive Recommender: What to Watch Tonight -->
+    <x-what-to-watch-widget />
+
     <!-- 4. Upcoming Movies (Coming Soon in Next 2 Months) -->
     <x-upcoming-section :upcomingMovies="$upcomingMovies" />
 

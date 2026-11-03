@@ -53,9 +53,18 @@
                 </a>
 
                 <!-- Desktop Nav Navigation (>= md screens) -->
-                <nav class="hidden md:flex items-center gap-6 lg:gap-7 text-sm font-medium text-slate-600">
+                <nav class="hidden md:flex items-center gap-5 lg:gap-6 text-sm font-medium text-slate-600">
                     <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'text-[#010629] font-bold relative py-2 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#FFA500]' : 'hover:text-[#010629] transition-colors py-2' }}">
                         Home
+                    </a>
+                    <a href="{{ route('what-to-watch') }}" class="{{ request()->routeIs('what-to-watch') ? 'text-[#010629] font-bold relative py-2 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#FFA500]' : 'hover:text-[#010629] text-amber-600 font-bold transition-colors py-2 flex items-center gap-1' }}">
+                        <span>✦</span><span>What to Watch</span>
+                    </a>
+                    <a href="{{ route('ott.releases') }}" class="{{ request()->routeIs('ott.releases') ? 'text-[#010629] font-bold relative py-2 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#FFA500]' : 'hover:text-[#010629] transition-colors py-2' }}">
+                        OTT Releases
+                    </a>
+                    <a href="{{ route('box-office') }}" class="{{ request()->routeIs('box-office') ? 'text-[#010629] font-bold relative py-2 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#FFA500]' : 'hover:text-[#010629] transition-colors py-2' }}">
+                        Box Office
                     </a>
                     <a href="{{ route('explore', ['type' => 'movie']) }}" class="{{ request()->fullUrlIs('*type=movie*') ? 'text-[#010629] font-bold relative py-2 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#FFA500]' : 'hover:text-[#010629] transition-colors py-2' }}">
                         Movies
@@ -66,14 +75,8 @@
                     <a href="{{ route('top-rated') }}" class="{{ request()->routeIs('top-rated') ? 'text-[#010629] font-bold relative py-2 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#FFA500]' : 'hover:text-[#010629] transition-colors py-2' }}">
                         Top Rated
                     </a>
-                    <a href="{{ route('genre.index') }}" class="{{ request()->routeIs('genre.*') ? 'text-[#010629] font-bold relative py-2 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#FFA500]' : 'hover:text-[#010629] transition-colors py-2' }}">
-                        Genres
-                    </a>
                     <a href="{{ route('person.index') }}" class="{{ request()->routeIs('person.*') ? 'text-[#010629] font-bold relative py-2 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#FFA500]' : 'hover:text-[#010629] transition-colors py-2' }}">
                         People
-                    </a>
-                    <a href="{{ route('explore') }}" class="{{ request()->routeIs('explore') && !request()->has('type') ? 'text-[#010629] font-bold relative py-2 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#FFA500]' : 'hover:text-[#010629] transition-colors py-2' }}">
-                        Explore
                     </a>
                 </nav>
             </div>
@@ -137,6 +140,51 @@
                         x-transition:leave-end="opacity-0 -translate-y-1 scale-98"
                         class="absolute right-0 mt-2 w-80 sm:w-96 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-200/90 py-2 z-50 overflow-hidden divide-y divide-slate-100 text-xs"
                     >
+                        <!-- 0. Instant Answer Knowledge Card (Zero-Click Answer Snippet) -->
+                        <template x-if="results.instant_card">
+                            <div class="p-3.5 bg-gradient-to-br from-[#010629] via-slate-900 to-[#0d163f] text-white border-b border-amber-500/30">
+                                <div class="flex items-start gap-3">
+                                    <template x-if="results.instant_card.image">
+                                        <img :src="results.instant_card.image" :alt="results.instant_card.title" class="w-12 h-14 object-cover rounded-lg shrink-0 border border-amber-400/30 shadow-md">
+                                    </template>
+                                    <div class="flex-grow min-w-0">
+                                        <div class="flex items-center gap-1.5 mb-1 flex-wrap">
+                                            <span 
+                                                class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border shadow-xs"
+                                                :class="results.instant_card.badge_class || 'bg-amber-500/20 text-amber-300 border-amber-500/40'"
+                                                x-text="results.instant_card.badge"
+                                            ></span>
+                                            <span class="text-[9px] text-amber-400/80 font-bold">★ Instant Fact</span>
+                                        </div>
+                                        <h4 class="font-bold text-xs text-white truncate" x-text="results.instant_card.title"></h4>
+                                        <div class="mt-1 flex items-baseline gap-2">
+                                            <span class="text-sm font-black text-[#FFA500]" x-text="results.instant_card.main_stat.value"></span>
+                                            <span class="text-[10px] text-slate-300" x-text="results.instant_card.main_stat.label"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Quick Detail Chips -->
+                                <div class="grid grid-cols-2 gap-1.5 mt-2.5 pt-2 border-t border-white/10 text-[10px]">
+                                    <template x-for="detail in results.instant_card.details" :key="detail.label">
+                                        <div class="bg-white/5 rounded-md px-2 py-1 border border-white/5">
+                                            <span class="text-slate-400 block text-[9px]" x-text="detail.label"></span>
+                                            <span class="font-semibold text-slate-200 truncate block" x-text="detail.value"></span>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <!-- Direct CTA -->
+                                <a 
+                                    :href="results.instant_card.url" 
+                                    class="mt-2.5 flex items-center justify-between px-3 py-1.5 rounded-lg bg-[#FFA500] hover:bg-amber-400 text-[#010629] font-black text-[11px] transition-colors shadow-xs group"
+                                >
+                                    <span x-text="results.instant_card.cta_label"></span>
+                                    <span class="group-hover:translate-x-0.5 transition-transform">→</span>
+                                </a>
+                            </div>
+                        </template>
+
                         <!-- Discovery / Recommendation Section (Pattern F) -->
                         <template x-if="results.discovery && results.discovery.length > 0">
                             <div class="p-2 space-y-1 bg-amber-50/50 border-b border-amber-100">
@@ -409,6 +457,30 @@
                         </svg>
                     </button>
                 </div>
+
+                <!-- Mobile Instant Autocomplete Results -->
+                <div 
+                    x-show="query.trim().length >= 2 && results.total > 0" 
+                    x-cloak 
+                    class="mt-2 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden divide-y divide-slate-100 text-xs"
+                >
+                    <!-- Mobile Instant Card -->
+                    <template x-if="results.instant_card">
+                        <div class="p-3 bg-gradient-to-br from-[#010629] via-slate-900 to-[#0d163f] text-white">
+                            <div class="flex items-start gap-2.5">
+                                <template x-if="results.instant_card.image">
+                                    <img :src="results.instant_card.image" :alt="results.instant_card.title" class="w-10 h-12 object-cover rounded shrink-0 border border-amber-400/30">
+                                </template>
+                                <div class="flex-grow min-w-0">
+                                    <span class="px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40" x-text="results.instant_card.badge"></span>
+                                    <h4 class="font-bold text-xs text-white truncate mt-1" x-text="results.instant_card.title"></h4>
+                                    <div class="text-[#FFA500] font-black text-xs" x-text="results.instant_card.main_stat.value"></div>
+                                </div>
+                            </div>
+                            <a :href="results.instant_card.url" class="mt-2 block text-center py-1.5 rounded bg-[#FFA500] text-[#010629] font-black text-[11px]" x-text="results.instant_card.cta_label"></a>
+                        </div>
+                    </template>
+                </div>
             </form>
         </div>
     </div>
@@ -506,6 +578,60 @@
                         <span class="text-sm font-semibold">Home</span>
                     </div>
                     <span class="text-xs text-slate-400">Hub</span>
+                </a>
+
+                <!-- 1b. What to Watch Tonight -->
+                <a 
+                    href="{{ route('what-to-watch') }}" 
+                    @click="mobileMenuOpen = false"
+                    class="flex items-center justify-between p-3 rounded-xl transition-all {{ request()->routeIs('what-to-watch') ? 'bg-amber-50 text-slate-950 font-bold border-l-4 border-amber-500' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-950 border-l-4 border-transparent' }}"
+                >
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 font-black text-xs">
+                            ✦
+                        </div>
+                        <div>
+                            <span class="text-sm font-semibold block text-amber-700">What to Watch</span>
+                            <span class="text-[11px] text-slate-400 block -mt-0.5">Mood & Time Recommender</span>
+                        </div>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-200 text-amber-900">Featured</span>
+                </a>
+
+                <!-- 1c. OTT Releases -->
+                <a 
+                    href="{{ route('ott.releases') }}" 
+                    @click="mobileMenuOpen = false"
+                    class="flex items-center justify-between p-3 rounded-xl transition-all {{ request()->routeIs('ott.releases') ? 'bg-rose-50 text-slate-950 font-bold border-l-4 border-rose-500' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-950 border-l-4 border-transparent' }}"
+                >
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-8 h-8 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center shrink-0 text-xs">
+                            🔴
+                        </div>
+                        <div>
+                            <span class="text-sm font-semibold block">OTT Releases</span>
+                            <span class="text-[11px] text-slate-400 block -mt-0.5">Digital Streaming Calendar</span>
+                        </div>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">Live</span>
+                </a>
+
+                <!-- 1d. Box Office -->
+                <a 
+                    href="{{ route('box-office') }}" 
+                    @click="mobileMenuOpen = false"
+                    class="flex items-center justify-between p-3 rounded-xl transition-all {{ request()->routeIs('box-office') ? 'bg-emerald-50 text-slate-950 font-bold border-l-4 border-emerald-500' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-950 border-l-4 border-transparent' }}"
+                >
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 text-xs">
+                            💰
+                        </div>
+                        <div>
+                            <span class="text-sm font-semibold block">Box Office</span>
+                            <span class="text-[11px] text-slate-400 block -mt-0.5">Budgets & Verdicts</span>
+                        </div>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Stats</span>
                 </a>
 
                 <!-- 2. Movies -->

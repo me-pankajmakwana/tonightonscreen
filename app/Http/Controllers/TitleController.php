@@ -139,12 +139,12 @@ class TitleController extends Controller
         $isSeries = ($title->type instanceof \App\Enums\TitleType ? $title->type === \App\Enums\TitleType::TV_SERIES : $title->type === 'tv_series');
         $typeWord = $isSeries ? 'web series' : 'movie';
 
-        // A1. Release Date ("when did {movie_name} come out", "{movie_name} release date")
+        // A1. Release Date ("when did {movie_name} come out", "{movie_name} release date", "when was {movie_name} released")
         if ($title->release_date) {
             $dateStr = $title->release_date->format('F d, Y');
             $yearStr = $title->release_date->format('Y');
             $faqs[] = [
-                'question' => "When did {$title->title} come out and what is its release date?",
+                'question' => "When did {$title->title} come out and what is its release date? (Theatrical & Digital Release)",
                 'answer' => "{$title->title} officially released on {$dateStr} ({$yearStr}). Discover full theatrical release timeline, festival screenings, and streaming dates on TonightOnScreen.",
             ];
         }
@@ -155,7 +155,7 @@ class TitleController extends Controller
             $minutes = $title->runtime_minutes % 60;
             $durationFormatted = $hours > 0 ? "{$hours}h {$minutes}m" : "{$minutes}m";
             $faqs[] = [
-                'question' => "What is the runtime of {$title->title}?",
+                'question' => "What is the runtime and duration of {$title->title}? ({$title->title} Run Time in Hours & Minutes)",
                 'answer' => "The total runtime of {$title->title} is {$title->runtime_minutes} minutes ({$durationFormatted}).",
             ];
         }
@@ -169,7 +169,7 @@ class TitleController extends Controller
             ];
         }
 
-        // B1. Cast & Actors ("{movie_name} cast", "cast of {movie_name}", "who stars in {movie_name}", "actors in {movie_name}")
+        // B1. Cast & Actors ("cast of {movie_name}", "{movie_name} cast", "who stars in {movie_name}", "actors in {movie_name}", "cast of {movie_name} {year}")
         if ($cast->isNotEmpty()) {
             $castWithChars = $cast->take(5)->map(function ($c) {
                 $name = $c->person?->name;
@@ -180,8 +180,8 @@ class TitleController extends Controller
             $castNames = $cast->take(6)->map(fn($c) => $c->person?->name)->filter()->join(', ', ' and ');
 
             $faqs[] = [
-                'question' => "Who stars in {$title->title} and who is in the cast list?",
-                'answer' => "The cast of {$title->title} stars {$castNames}. Detailed character names and talent biographies are available on TonightOnScreen.",
+                'question' => "Who stars in {$title->title}? (Cast of {$title->title}, Actors & Characters List)",
+                'answer' => "The cast of {$title->title} stars {$castNames}. Detailed character profiles and talent biographies are cataloged on TonightOnScreen.",
             ];
 
             // B2. Characters & Character Names ("{movie_name} characters", "{movie_name} character names")
@@ -193,48 +193,48 @@ class TitleController extends Controller
             }
         }
 
-        // C1. Budget & Box Office Collection ("{movie_name} budget", "{movie_name} collection", "{movie_name} budget and collection")
+        // C1. Budget & Box Office Collection ("{movie_name} budget", "{movie_name} collection", "{movie_name} budget and collection worldwide", "{movie_name} worldwide collection", "{movie_name} cost")
         if ($title->budget || $title->box_office) {
             $budgetStr = $title->formatted_budget ?? 'Undisclosed';
             $boxOfficeStr = $title->formatted_box_office ?? 'Under compilation';
             $label = $title->box_office_label;
 
             $faqs[] = [
-                'question' => "What is the budget and box office collection of {$title->title}?",
-                'answer' => "{$title->title} was produced on an estimated budget of {$budgetStr} and grossed a worldwide {$label} of {$boxOfficeStr}.",
+                'question' => "What is the budget and box office collection of {$title->title}? ({$title->title} Budget, Worldwide Collection & Cost)",
+                'answer' => "{$title->title} was produced on an estimated budget of {$budgetStr} and grossed a worldwide {$label} of {$boxOfficeStr}. Explore full box office breakdown, profit metrics, and theatrical verdict on TonightOnScreen.",
             ];
 
-            // C2. Hit or Flop Commercial Verdict ("{movie_name} hit or flop")
+            // C2. Hit or Flop Commercial Verdict ("{movie_name} hit or flop", "is {movie_name} hit or flop", "was {movie_name} a flop")
             if ($title->budget && $title->box_office && $title->box_office_verdict) {
                 $faqs[] = [
-                    'question' => "Is {$title->title} a hit or flop?",
-                    'answer' => "Based on its estimated budget of {$budgetStr} and worldwide box office collection of {$boxOfficeStr}, {$title->title} is classified as a {$title->box_office_verdict} at the box office.",
+                    'question' => "Is {$title->title} a hit or flop at the box office? ({$title->title} Hit or Flop Box Office Verdict)",
+                    'answer' => "Based on its estimated budget of {$budgetStr} and worldwide box office gross of {$boxOfficeStr}, {$title->title} is classified as a {$title->box_office_verdict} at the worldwide box office.",
                 ];
             }
         }
 
-        // D1. OTT and Streaming ("where to watch {movie_name}", "{movie_name} OTT", "{movie_name} OTT release date", "{movie_name} on Netflix")
+        // D1. OTT and Streaming ("where to watch {movie_name}", "{movie_name} OTT", "{movie_name} OTT release date", "{movie_name} digital release date", "{movie_name} in which ott", "{movie_name} on Netflix")
         if ($title->relationLoaded('streamingPlatforms') && $title->streamingPlatforms->isNotEmpty()) {
             $platformList = $title->streamingPlatforms->pluck('name')->join(', ', ' and ');
             $faqs[] = [
-                'question' => "Where can I watch {$title->title} on OTT?",
-                'answer' => "{$title->title} is currently available to stream online on {$platformList}. Check TonightOnScreen for real-time 4K HDR streaming options and regional availability.",
+                'question' => "Where to watch {$title->title} on OTT? ({$title->title} OTT Release Date, Streaming Platform & Digital Rights)",
+                'answer' => "{$title->title} is currently available to stream online on {$platformList}. Check TonightOnScreen for real-time 4K HDR streaming options, language audios, and regional OTT platform availability.",
             ];
         } else {
             $faqs[] = [
-                'question' => "Where to watch {$title->title} online?",
-                'answer' => "Digital streaming and OTT rights for {$title->title} are tracked regularly on TonightOnScreen. Bookmark this page for instant streaming alerts and platform updates.",
+                'question' => "When is {$title->title} coming to OTT? ({$title->title} OTT Release Date, Platform & Streaming Rights)",
+                'answer' => "Digital streaming and OTT rights for {$title->title} are tracked regularly on TonightOnScreen. Bookmark this page for instant OTT release date alerts, platform announcements, and streaming updates.",
             ];
         }
 
-        // E1. Director, Writer & Producer ("{movie_name} director", "who directed {movie_name}", "{movie_name} writer", "{movie_name} producer")
+        // E1. Director, Writer & Producer ("{movie_name} director", "who directed {movie_name}", "{movie_name} director name", "{movie_name} writer")
         if ($directors->isNotEmpty()) {
             $directorNames = $directors->map(fn($d) => $d->person?->name)->filter()->join(', ', ' and ');
             $writerNames = $writers && $writers->isNotEmpty() ? $writers->map(fn($w) => $w->person?->name)->filter()->join(', ', ' and ') : null;
             $writerPart = $writerNames ? " and written by {$writerNames}" : '';
 
             $faqs[] = [
-                'question' => "Who directed and wrote {$title->title}?",
+                'question' => "Who directed and wrote {$title->title}? ({$title->title} Director & Crew)",
                 'answer' => "{$title->title} was directed by {$directorNames}{$writerPart}. Explore their complete filmographies and upcoming releases on TonightOnScreen.",
             ];
         }

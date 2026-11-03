@@ -17,7 +17,7 @@ class TitleController extends Controller
      */
     public function show(string $slug, StructuredDataService $structuredDataService)
     {
-        $cacheKey = "title_profile_v6_{$slug}";
+        $cacheKey = "title_profile_v7_{$slug}";
 
         $cachedData = Cache::remember($cacheKey, now()->addHours(24), function () use ($slug, $structuredDataService) {
             $title = Title::query()

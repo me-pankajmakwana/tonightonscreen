@@ -32,9 +32,7 @@
     description="Get in touch with TonightOnScreen editors, report metadata corrections, request film partnerships, press inquiries or support."
 >
     @push('head')
-        <script type="application/ld+json">
-        {!! json_encode($contactSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
-        </script>
+        <x-seo.json-ld :data="$contactSchema" />
     @endpush
 
     <!-- Header Banner -->

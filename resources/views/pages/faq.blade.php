@@ -69,9 +69,7 @@
 >
     @push('head')
         <!-- Google FAQPage Schema.org JSON-LD for Rich Snippets in SERPs -->
-        <script type="application/ld+json">
-        {!! json_encode($faqSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
-        </script>
+        <x-seo.json-ld :data="$faqSchema" />
     @endpush
 
     <!-- Header Banner -->

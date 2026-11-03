@@ -78,7 +78,7 @@ class PersonController extends Controller
      */
     public function show(string $slug)
     {
-        $cacheKey = "person_profile_v5_{$slug}";
+        $cacheKey = "person_profile_v6_{$slug}";
 
         $data = Cache::remember($cacheKey, now()->addHours(24), function () use ($slug) {
             $person = Person::query()

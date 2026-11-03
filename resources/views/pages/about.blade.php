@@ -21,9 +21,7 @@
     description="Learn about TonightOnScreen, our passion for cinema, verified film catalog, critic & audience scoring methodology, and our commitment to discovering what to watch tonight."
 >
     @push('head')
-        <script type="application/ld+json">
-        {!! json_encode($aboutSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
-        </script>
+        <x-seo.json-ld :data="$aboutSchema" />
     @endpush
 
     <!-- Hero Header -->

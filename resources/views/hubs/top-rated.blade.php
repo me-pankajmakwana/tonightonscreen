@@ -27,9 +27,7 @@
 >
     @push('head')
         <!-- Google ItemList Schema.org JSON-LD for Ranking Rich Snippets -->
-        <script type="application/ld+json">
-        {!! json_encode($topRatedSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
-        </script>
+        <x-seo.json-ld :data="$topRatedSchema" />
     @endpush
 
     <!-- Header Banner -->

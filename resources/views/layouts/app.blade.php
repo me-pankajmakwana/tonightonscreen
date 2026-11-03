@@ -89,14 +89,10 @@
     <link rel="apple-touch-icon" href="{{ asset('Tonight OnScreen Logo Icon.png') }}">
 
     <!-- Structured Data: WebSite & SearchAction for Google Sitelinks Search Box -->
-    <script type="application/ld+json">
-    {!! json_encode($websiteSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
-    </script>
+    <x-seo.json-ld :data="$websiteSchema" />
 
     <!-- Structured Data: Organization -->
-    <script type="application/ld+json">
-    {!! json_encode($organizationSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
-    </script>
+    <x-seo.json-ld :data="$organizationSchema" />
 
     @stack('head')
 

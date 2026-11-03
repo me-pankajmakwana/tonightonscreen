@@ -13,9 +13,7 @@
     :description="$seoDescription"
 >
     @push('head')
-        <script type="application/ld+json">
-        {!! json_encode($platformsSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
-        </script>
+        <x-seo.json-ld :data="$platformsSchema" />
     @endpush
 
     <!-- Header Banner -->

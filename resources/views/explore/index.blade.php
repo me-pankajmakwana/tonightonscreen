@@ -18,9 +18,7 @@
 <x-layouts.app :title="'Explore Movies, TV Shows & Streaming Titles — TonightOnScreen'">
     @push('head')
         <!-- Schema.org ItemList JSON-LD for Search Engine SEO -->
-        <script type="application/ld+json">
-        {!! json_encode($exploreSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
-        </script>
+        <x-seo.json-ld :data="$exploreSchema" />
     @endpush
 
     @php

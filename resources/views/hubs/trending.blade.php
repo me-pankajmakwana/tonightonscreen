@@ -25,9 +25,7 @@
 >
     @push('head')
         <!-- Google ItemList Schema.org JSON-LD for Trending Entertainment -->
-        <script type="application/ld+json">
-        {!! json_encode($trendingSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
-        </script>
+        <x-seo.json-ld :data="$trendingSchema" />
     @endpush
 
     <!-- Header Banner -->

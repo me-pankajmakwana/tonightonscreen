@@ -124,11 +124,62 @@ class SeoHelper
     }
 
     /**
+     * Recursively sanitize all string values in a structured data array:
+     * - Decodes HTML entities (e.g. &#039; -> ', &quot; -> ", &amp; -> &)
+     * - Strips any HTML tags
+     * - Strips legacy escaped slashes (e.g. \' -> ', \" -> ")
+     * - Strips invalid escape sequences before characters (e.g. \& -> &)
+     * - Normalizes multiple spaces into a single space
+     */
+    public static function sanitizeStructuredData(mixed $data): mixed
+    {
+        if (is_array($data)) {
+            return array_map([self::class, 'sanitizeStructuredData'], $data);
+        }
+
+        if (is_string($data)) {
+            return self::cleanString($data);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Clean a string by decoding HTML entities, stripping tags, removing escaped quotes,
+     * stripping invalid JSON escape sequences, and normalizing whitespace.
+     */
+    public static function cleanString(?string $text): string
+    {
+        if ($text === null || $text === '') {
+            return '';
+        }
+
+        // 1. Decode HTML entities (decode twice in case of double-encoded entities like &amp;#039;)
+        $cleaned = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $cleaned = html_entity_decode($cleaned, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        // 2. Strip HTML tags
+        $cleaned = strip_tags($cleaned);
+
+        // 3. Remove escaped quotes / backslashes from legacy SQL imports or addslashes (e.g. \' -> ', \" -> ", \&#039; -> ')
+        $cleaned = stripslashes($cleaned);
+
+        // 4. Remove any stray backslashes before characters that form invalid JSON escape sequences
+        $cleaned = preg_replace('/\\\\([^"\\\\\/bfnrtu])/', '$1', $cleaned);
+
+        // 5. Normalize whitespace
+        $cleaned = trim(preg_replace('/\s+/', ' ', $cleaned));
+
+        return $cleaned;
+    }
+
+    /**
      * Safely output JSON-LD script content without invalid escape sequences.
      */
     public static function toJsonLd(array $schema): string
     {
-        return json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        $sanitized = self::sanitizeStructuredData($schema);
+        return json_encode($sanitized, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
 
     /**
@@ -140,7 +191,7 @@ class SeoHelper
             return "TonightOnScreen — The definitive database and curated streaming guide for world cinema, web series, and talent filmographies.";
         }
 
-        $cleaned = trim(preg_replace('/\s+/', ' ', strip_tags($text)));
+        $cleaned = self::cleanString($text);
         return Str::limit($cleaned, $limit);
     }
 

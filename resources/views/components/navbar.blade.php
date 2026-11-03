@@ -78,6 +78,9 @@
                     <a href="{{ route('person.index') }}" class="{{ request()->routeIs('person.*') ? 'text-[#010629] font-bold relative py-2 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#FFA500]' : 'hover:text-[#010629] transition-colors py-2' }}">
                         People
                     </a>
+                    <a href="{{ route('games.index') }}" class="{{ request()->routeIs('games.*') ? 'text-[#010629] font-bold relative py-2 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#FFA500]' : 'hover:text-[#010629] text-emerald-600 font-bold transition-colors py-2 flex items-center gap-1' }}">
+                        <span>🎮</span><span>Games</span>
+                    </a>
                 </nav>
             </div>
 
@@ -632,6 +635,24 @@
                         </div>
                     </div>
                     <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Stats</span>
+                </a>
+
+                <!-- 1e. Cinema Games Arcade -->
+                <a 
+                    href="{{ route('games.index') }}" 
+                    @click="mobileMenuOpen = false"
+                    class="flex items-center justify-between p-3 rounded-xl transition-all {{ request()->routeIs('games.*') ? 'bg-emerald-50 text-slate-950 font-bold border-l-4 border-emerald-500' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-950 border-l-4 border-transparent' }}"
+                >
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-8 h-8 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center shrink-0 text-xs">
+                            🎮
+                        </div>
+                        <div>
+                            <span class="text-sm font-semibold block text-sky-800">Cinema Games</span>
+                            <span class="text-[11px] text-slate-400 block -mt-0.5">Daily Cinele & Box Office Clash</span>
+                        </div>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800">Play</span>
                 </a>
 
                 <!-- 2. Movies -->

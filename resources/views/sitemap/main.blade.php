@@ -32,6 +32,24 @@
         <priority>0.90</priority>
     </url>
     <url>
+        <loc>{{ route('games.index') }}</loc>
+        <lastmod>{{ $latestUpdate->toAtomString() }}</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.95</priority>
+    </url>
+    <url>
+        <loc>{{ route('games.cinele') }}</loc>
+        <lastmod>{{ $latestUpdate->toAtomString() }}</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.95</priority>
+    </url>
+    <url>
+        <loc>{{ route('games.higher-lower') }}</loc>
+        <lastmod>{{ $latestUpdate->toAtomString() }}</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.95</priority>
+    </url>
+    <url>
         <loc>{{ route('top-rated') }}</loc>
         <lastmod>{{ $latestUpdate->toAtomString() }}</lastmod>
         <changefreq>daily</changefreq>

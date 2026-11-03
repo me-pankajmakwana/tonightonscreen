@@ -14,6 +14,9 @@
     <!-- 4. Upcoming Movies (Coming Soon in Next 2 Months) -->
     <x-upcoming-section :upcomingMovies="$upcomingMovies" />
 
+    <!-- 4b. Cinema Games & Trivia Banner -->
+    <x-games-banner />
+
     <!-- 5. Today's Celebrity Birthdays (Celebrity Spotlight) -->
     <x-birthdays-section :todayBirthdays="$todayBirthdays" :upcomingBirthdays="$upcomingBirthdays" />
 

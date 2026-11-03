@@ -149,6 +149,7 @@ Disallow: /watchlist/toggle
 Disallow: /watchlist/clear
 Disallow: /reviews/*/helpful
 Disallow: /api/what-to-watch/recommend
+Disallow: /api/games/*
 
 # XML Sitemap Index
 Sitemap: {$sitemapUrl}

@@ -44,6 +44,7 @@
                     <li><a href="{{ route('what-to-watch') }}" class="hover:text-[#FFA500] transition-colors font-bold text-amber-400">✦ What to Watch Tonight</a></li>
                     <li><a href="{{ route('ott.releases') }}" class="hover:text-[#FFA500] transition-colors font-bold text-rose-400">🔴 OTT Releases Calendar</a></li>
                     <li><a href="{{ route('box-office') }}" class="hover:text-[#FFA500] transition-colors font-bold text-emerald-400">💰 Box Office & Budgets</a></li>
+                    <li><a href="{{ route('games.index') }}" class="hover:text-[#FFA500] transition-colors font-bold text-sky-400">🎮 Cinema Games Arcade</a></li>
                     <li><a href="{{ route('first-movies') }}" class="hover:text-[#FFA500] transition-colors">🌟 First Movies & Debuts</a></li>
                     <li><a href="{{ route('top-rated') }}" class="hover:text-[#FFA500] transition-colors">Top Rated All Time</a></li>
                     <li><a href="{{ route('trending') }}" class="hover:text-[#FFA500] transition-colors">Trending Tonight</a></li>

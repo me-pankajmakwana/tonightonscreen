@@ -4,6 +4,7 @@ use App\Http\Controllers\BoxOfficeController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DebutController;
 use App\Http\Controllers\ExploreController;
+use App\Http\Controllers\GameController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OttReleaseController;
@@ -32,6 +33,13 @@ Route::get('/ott-releases', [OttReleaseController::class, 'index'])->name('ott.r
 Route::get('/box-office', [BoxOfficeController::class, 'index'])->name('box-office');
 Route::get('/first-movies', [DebutController::class, 'index'])->name('first-movies');
 Route::get('/debuts', [DebutController::class, 'index'])->name('debuts'); // Friendly alias
+
+// Cinema Games Arcade
+Route::get('/games', [GameController::class, 'index'])->name('games.index');
+Route::get('/games/higher-lower', [GameController::class, 'higherLower'])->name('games.higher-lower');
+Route::get('/api/games/higher-lower/next', [GameController::class, 'higherLowerNext'])->name('games.higher-lower.next');
+Route::get('/games/cinele', [GameController::class, 'cinele'])->name('games.cinele');
+Route::get('/api/games/cinele/guess', [GameController::class, 'cineleGuess'])->name('games.cinele.guess');
 
 // Streaming Platforms Hub
 Route::get('/platforms', [PlatformController::class, 'index'])->name('platforms.index');

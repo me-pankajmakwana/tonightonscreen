@@ -57,7 +57,7 @@
                     <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'text-[#010629] font-bold relative py-2 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#FFA500]' : 'hover:text-[#010629] transition-colors py-2' }}">
                         Home
                     </a>
-                    <a href="{{ route('what-to-watch') }}" class="{{ request()->routeIs('what-to-watch') ? 'text-[#010629] font-bold relative py-2 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#FFA500]' : 'hover:text-[#010629] text-amber-600 font-bold transition-colors py-2 flex items-center gap-1' }}">
+                    <!-- <a href="{{ route('what-to-watch') }}" class="{{ request()->routeIs('what-to-watch') ? 'text-[#010629] font-bold relative py-2 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#FFA500]' : 'hover:text-[#010629] text-amber-600 font-bold transition-colors py-2 flex items-center gap-1' }}">
                         <span>✦</span><span>What to Watch</span>
                     </a>
                     <a href="{{ route('ott.releases') }}" class="{{ request()->routeIs('ott.releases') ? 'text-[#010629] font-bold relative py-2 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#FFA500]' : 'hover:text-[#010629] transition-colors py-2' }}">
@@ -65,7 +65,7 @@
                     </a>
                     <a href="{{ route('box-office') }}" class="{{ request()->routeIs('box-office') ? 'text-[#010629] font-bold relative py-2 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#FFA500]' : 'hover:text-[#010629] transition-colors py-2' }}">
                         Box Office
-                    </a>
+                    </a> -->
                     <a href="{{ route('explore', ['type' => 'movie']) }}" class="{{ request()->fullUrlIs('*type=movie*') ? 'text-[#010629] font-bold relative py-2 after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#FFA500]' : 'hover:text-[#010629] transition-colors py-2' }}">
                         Movies
                     </a>
